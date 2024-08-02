@@ -52,10 +52,10 @@ const Play = () => {
                 <div className="w-full sticky top-0 z-20">
                         {
                             isShow&&(
-                                <div className="fixed h-screen w-full bg-black bg-opacity-45 z-40 overflow-hidden overscroll-none">
+                                <div className="fixed h-screen w-full md:max-h-[700px] md:max-w-[380px] bg-black bg-opacity-45 z-40 overflow-hidden overscroll-none">
                                     <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[#e5f2f8] pb-5 w-[375px] rounded-lg">
                                         <div className="flex flex-row justify-between items-center w-full bg-[#2d3c53] h-12 rounded-t-lg px-3">
-                                            <span>Change Name Pet</span>
+                                            <span className='text-white'>Change Name Pet</span>
                                             <button onClick={()=>setIsShow(false)}>
                                                 <img width={35} src="/assets/icon/close.svg" alt="close" />
                                             </button>
@@ -66,7 +66,7 @@ const Play = () => {
                                         </div>
                                         <div className="flex justify-end px-3 mt-7">
                                             <button onClick={onChangeName} className="px3 py-2 w-32 rounded-lg h-12 bg-[#2d3c53] hover:bg-opacity-90">
-                                                <span>Change</span>
+                                                <span className='text-white'>Change</span>
                                             </button>
                                         </div>
                                     </div>

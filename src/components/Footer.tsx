@@ -21,7 +21,7 @@ const Footer = () =>{
         {src: "/assets/button/home.png",title: "home",url:"/"},
         {src: "/assets/button/mining.png",title: "mining", url: "/mining"},
         {src: "/assets/button/attack.png",title: "attack", url: "/battle"},
-        {src: "/assets/button/petlist.png",title:"petlist", url: "/mint"},
+        {src: "/assets/button/petlist.png",title:"petlist", url: "/profile"},
         {src: "/assets/button/training.png",title: "training", url: "/mission"},
     ]
 
