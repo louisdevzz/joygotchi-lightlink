@@ -30,7 +30,9 @@ const Footer = () =>{
     }
 
     return(
-        <div className="bg-[#e5f2f8] sticky w-full bottom-0">
+        <div className="bg-[#e5f2f8] sticky w-full bottom-0 mt-1
+        
+        ">
             <img width={200} height={100} className="w-full h-[108px]" src="/assets/background/frame_bottom.png" alt="frame" />
             <div className="absolute top-2 left-0 flex justify-center w-full">
                 <div className="flex flex-row gap-2 justify-between w-full px-2 items-center">

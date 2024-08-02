@@ -1,6 +1,5 @@
 import {useAccount} from 'wagmi';
 import Footer from './Footer';
-import Header from './Header';
 import { useState } from 'react';
 import Link from 'next/link';
 import CountDownTimer from './CountDownTimer';
@@ -48,9 +47,9 @@ const Play = () => {
     }
 
     return(
-        <div className="h-full md:max-h-[700px] w-full md:max-w-[380px] rounded-lg shadow-lg relative">
-            <div className="bg-[#e5f2f8 h-full w-full">
-                <div className="w-full fix-header sticky top-0 z-20">
+        <div className="h-full md:max-h-[700px] w-full md:max-w-[380px] rounded-lg shadow-lg relative overflow-hidden">
+            <div className="bg-[#e5f2f8] flex flex-col h-full w-full overflow-hidden">
+                <div className="w-full sticky top-0 z-20">
                         {
                             isShow&&(
                                 <div className="fixed h-screen w-full bg-black bg-opacity-45 z-40 overflow-hidden overscroll-none">
@@ -106,10 +105,9 @@ const Play = () => {
                             </div>
                         </div>
                 </div>
-                <div className="overflow-y-auto h-full w-full">
-                    <div className="h-full bg-[#e5f2f8] w-full flex flex-col flex-1 relative ">
-                        <div className="p-3 h-full flex flex-col relative w-full">
-                            <div className="flex flex-col">
+                <div className="h-full overflow-y-auto w-full scrollbar">
+                    <div className="p-3 h-full flex flex-col relative w-full">
+                        <div className="flex flex-col">
                             <div className="mt-2 h-full">
                                 <div className="w-full h-[250px] rounded-md flex justify-center flex-row relative">
                                     <img width={60} className="w-full h-full rounded-md" src="/assets/background/screen_pet.png" alt="screen" />
@@ -143,7 +141,6 @@ const Play = () => {
                                 </div>
                             </div>
                             <BuyItem petLists={petLists} index={index} status={setStatus} error={setError}/>
-                            </div>
                         </div>
                     </div>
                 </div>
