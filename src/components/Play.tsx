@@ -1,24 +1,87 @@
-import {useAccount} from 'wagmi';
+"use client"
 import Footer from './Footer';
-import { useState } from 'react';
-import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import CountDownTimer from './CountDownTimer';
 import BuyItem from './BuyItem';
 import ScreenPet from './ScreenPet';
+import { useRouter } from 'next/router';
+import { ConnectButton, lightTheme, useActiveAccount, useReadContract, useSendTransaction } from 'thirdweb/react';
+
+const client = createThirdwebClient({
+    clientId: process.env.CLIENT_ID!
+});
+import { inAppWallet } from "thirdweb/wallets";
+import { createThirdwebClient, getContract, prepareContractCall } from 'thirdweb';
+import axios from 'axios';
+import { petAddress } from '@/utils/abi';
+
 
 const Play = () => {
-    const {address, isConnected, isConnecting, isDisconnected} = useAccount();
-    const [account, setAccount] = useState<string|null>(address||null);
+    const wallets = [inAppWallet()]
+    const account = useActiveAccount();
+    const { mutate: sendTransaction, data: txResult,isError: isErrorTx,error: ErrorTx,isSuccess: isSuccessTx } = useSendTransaction();
     const [isShow, setIsShow] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(false);
     const [namePet,setNamePet] = useState<string|null>(null);
     const [petLists, setPetLists] = useState<any|null>([]);
+    const [petList, setPetList] = useState<any|null>([]);
     const [index, setIndex] = useState<number>(0);
     const [status, setStatus] = useState<string|null>(null);
-    const seconds = Number(localStorage.getItem("seconds"))??0;
-    const [isSign, setIsSign] = useState<boolean>(false);
+    const [infoPet, setDataPet] = useState<any>([])
+    const seconds = 0;
     const [error, setError] = useState<string|null>(null)
-    //console.log("address",address)
+    const router = useRouter();
+    const contractAddress = "0x5D31C0fF4AAF1C906B86e65fDd3A17c7087ab1E3"
+
+    useEffect(()=>{
+        if(petList.length > 0){
+            setNamePet(petList[index].metadata.name)
+        }
+    },[petList])
+
+    const contractPet = getContract({
+        client,
+        address: contractAddress,
+        chain: {
+            id:1891,
+            rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
+        },
+        abi: petAddress
+    });
+
+
+    const loadNFT = async() =>{
+        const response = await axios.get(`https://pegasus.lightlink.io/api/v2/addresses/${account?.address}/nft?type=ERC-721`,{
+            headers:{
+                "Content-Type":"application/json"
+            }
+        })
+        const data = response.data;
+        if(data){
+            setPetList(data.items)
+        }
+    }
+
+    const { data: dataPet, isError,isSuccess } = useReadContract({
+        contract: contractPet,
+        method: "getPetInfo",
+        params: [petList[index]?.id],
+    });
+    
+    if(isError){
+        console.log('You have not pet')
+    }
+
+
+    useEffect(()=>{
+        if(!account){
+            router.push("/login")
+        }
+        if(account){
+            loadNFT()
+        }
+    },[account])
+    
 
     const onChangeName = async() =>{
         try{
@@ -45,7 +108,7 @@ const Play = () => {
         if(format.length > 6) return "0x"+format.slice(0,2)+'...'+format.slice(-2);
         return "0x"+format
     }
-
+    //console.log("petlist",dataPet&&dataPet[6])
     return(
         <div className="h-full md:max-h-[700px] w-full md:max-w-[380px] rounded-lg shadow-lg relative overflow-hidden">
             <div className="bg-[#e5f2f8] flex flex-col h-full w-full overflow-hidden">
@@ -89,14 +152,23 @@ const Play = () => {
                                     <p className="text-[#fff]">{namePet}</p>
                                     <img width={14} src="/assets/icon/pen.svg" alt="pen" />
                                 </div>
-                                <div className="flex flex-row gap-4 mt-5 items-center">
-                                {
-                                    account&&(
-                                    <Link href={"/mint?tab=2"} className="px-2 cursor-pointer py-0.5 h-8 rounded-full bg-[#a9c6e4]">
-                                        <small className="text-white">{truncateString(account)}</small>
-                                    </Link>
-                                    )
-                                }
+                                <div className="flex flex-row gap-4 mt-1 items-center">
+                                <ConnectButton connectModal={{ size: "wide" }} detailsButton={{
+                                        render:()=>{
+                                            return(
+                                                <div className="px-2 cursor-pointer py-0.5 h-8 rounded-full bg-[#a9c6e4]">
+                                                    {truncateString(account?.address as string)}
+                                                </div>
+                                            )
+                                        }
+                                    }} theme={lightTheme({
+                                        colors:{
+                                            connectedButtonBg: "white",
+                                        },
+                                        
+                                    })} signInButton={{
+                                        label: "Connect Wallet"
+                                    }} autoConnect client={client} wallets={wallets} />
                                 </div>
                             </div>
                             <div className="px-3 py-2 w-[150px] rounded-full text-center absolute top-2/3 left-1/3  h-10 bg-[#f48f59]">
@@ -115,7 +187,7 @@ const Play = () => {
                                         {/* <img width={10} height={10} className="w-6 h-6 absolute top-1/2 left-[70px] " src="/assets/icon/arrow_left.png" alt="arrow" /> */}
                                         {/* <img width={150} className="absolute top-1/2 left-[53%] transform -translate-x-1/2 -translate-y-1/2" src="/assets/pet/pet.png" alt="pet" /> */}
                                         <div className="absolute top-[40%] left-[50%] transform -translate-x-1/2 -translate-y-1/2">
-                                            <ScreenPet petList={petLists} changeName={setNamePet} setIndex={setIndex}/>
+                                            <ScreenPet petList={petList} changeName={setNamePet} setIndex={setIndex}/>
                                         </div>
                                         {/* <img width={10} height={10} className="w-6 h-6 absolute top-1/2 right-[60px] " src="/assets/icon/arrow_right.png" alt="arrow" /> */}
                                     </div>
@@ -124,20 +196,20 @@ const Play = () => {
                             </div>
                             <div className="mt-2 bg-[#a9c6e4] w-full flex-row flex justify-between rounded-lg px-3 py-4">
                                 <div className="flex flex-col text-center">
-                                    <p className="text-xl">{petLists.length > 0 ? petLists[index].reward_debt:"-"} NEAR</p>
+                                    <p className="text-xl">{dataPet ? dataPet[6].toString():"-"} NEAR</p>
                                     <span className="text-[#00000088]">REWARDS</span>
                                 </div>
                                 <div className="flex flex-col text-center">
-                                    <p className="text-xl">{petLists.length > 0 ? petLists[index].level:"-"}</p>
+                                    <p className="text-xl">{dataPet ? dataPet[3].toString():"-"}</p>
                                     <span className="text-[#00000088]">LEVEL</span>
                                 </div>
                                 <div className="flex flex-col text-center">
-                                    <p className="text-xl">{petLists.length > 0 ? petLists[index].status:"-"}</p>
+                                    <p className="text-xl">{dataPet ? dataPet[1].toString():"-"}</p>
                                     <span className="text-[#00000088]">STATUS</span>
                                 </div>
                                 <div className="flex flex-col text-center">
-                                    <p className="text-xl">{petLists.length > 0 ? petLists[index].star:"-"}</p>
-                                    <span className="text-[#00000088]">STAR</span>
+                                    <p className="text-xl">{dataPet ? dataPet[2].toString():"-"}</p>
+                                    <span className="text-[#00000088]">SCORE</span>
                                 </div>
                             </div>
                             <BuyItem petLists={petLists} index={index} status={setStatus} error={setError}/>

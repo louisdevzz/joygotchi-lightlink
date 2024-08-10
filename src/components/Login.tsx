@@ -1,16 +1,42 @@
-import {usePrivy} from '@privy-io/react-auth';
+"use client"
+import { createThirdwebClient } from "thirdweb";
+import { ConnectButton, lightTheme, useActiveAccount } from "thirdweb/react";
+import { useRouter } from "next/router";
+const client = createThirdwebClient({
+    clientId: process.env.CLIENT_ID!
+});
+import { inAppWallet } from "thirdweb/wallets";
 
 const Login = () =>{
-    const {login,logout} = usePrivy();
+	const wallets = [inAppWallet()];
+	const account = useActiveAccount()
+	const router = useRouter()
+
+	if(account){
+		router.push("/")
+	}
     return(
         <div className="max-h-[700px] max-w-[380px] align-middle overflow-hidden rounded-lg shadow-lg">
             <div className="bg-[#e5f2f8] w-[380px] h-[700px]">
-                <div className="p-3">
-                    <div className="w-full flex justify-center items-center h-[700px]">
-                        <button className="button" onClick={login}>
-                            <span className="button_top">Connect Wallet</span>
-                        </button>
-                    </div>
+                <div className="p-3 flex flex-col h-full w-full justify-center items-center">
+					<div>
+						<ConnectButton connectModal={{ size: "wide" }} detailsButton={{
+							render:()=>{
+								return(
+									<div className="bg-green-600 px-3 py-2 rounded-lg">
+										<span>Connect Successfull!</span>
+									</div>
+								)
+							}
+						}} theme={lightTheme({
+							colors:{
+								connectedButtonBg: "white",
+							},
+							
+						})} signInButton={{
+							label: "Connect Wallet"
+						}} autoConnect client={client} wallets={wallets} />
+					</div>
                 </div>
             </div>
         </div>

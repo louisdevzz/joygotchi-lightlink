@@ -1,11 +1,11 @@
+"use client"
 import { useState, useEffect } from "react";
 
-interface commentProp {
+interface commentProp{
   seconds: number;
-  setIsDisable?: any
 }
 
-const CountDownTimer = ({ seconds,setIsDisable }: commentProp) => {
+const CountDownTimer = ({ seconds }: commentProp) => {
   const [remainSecond, setRemainSecond] = useState(0);
 
   useEffect(() => {
@@ -19,7 +19,6 @@ const CountDownTimer = ({ seconds,setIsDisable }: commentProp) => {
       
       if (remain <= 0) {
         clearInterval(countDown);
-        setIsDisable(false)
       }
     }, 1000);
 

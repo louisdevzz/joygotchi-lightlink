@@ -2,16 +2,107 @@
 import CountDownTimer from "@/components/CountDownTimer";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import { faucetAbi } from "@/utils/abi";
 import { useState } from "react";
+import { createThirdwebClient, getContract, getGasPrice, prepareContractCall, prepareTransaction, sendAndConfirmTransaction, sendTransaction, simulateTransaction } from "thirdweb";
+import { lightTheme, TransactionButton, useActiveAccount, useSendTransaction } from "thirdweb/react";
+import { generateAccount, inAppWallet } from "thirdweb/wallets";
+const client = createThirdwebClient({
+    clientId: process.env.CLIENT_ID!
+});
 
 const Mining = () =>{
     const [status, setStatus] = useState<string|null>(null);
     const [isDisable, setDisable] = useState<boolean>(false);
-    const oldSeconds = Number(localStorage.getItem("timeClaim")||0)
+    const oldSeconds = 0
     const [seconds,setSeconds] = useState<number>(Math.abs(Math.floor((Date.now()-oldSeconds)/1000) - 60));
     const [error, setError] = useState<string|null>(null)
     const [isShowModal, setIsShowModal] = useState<boolean>(false);
     const [isClaim, setIsClaim] = useState<boolean>(false)
+    const faucetAddress= "0x937529264EBF13a0203cfAf7bBf09a3822f6636a"
+    const acccont = useActiveAccount();
+    const { mutate: sendTx, data: transactionResult } = useSendTransaction();
+	console.log("address", acccont?.address);
+
+    const onFaucet = async() =>{
+        const contract = getContract({
+            client,
+            address: faucetAddress,
+            chain: {
+                id:1891,
+                rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
+            },
+            abi: [
+                {
+                    "inputs": [
+                        {
+                            "internalType": "address",
+                            "name": "_token",
+                            "type": "address"
+                        }
+                    ],
+                    "stateMutability": "nonpayable",
+                    "type": "constructor"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "address",
+                            "name": "_to",
+                            "type": "address"
+                        }
+                    ],
+                    "name": "getRaiToken",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "toggleActive",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "token",
+                    "outputs": [
+                        {
+                            "internalType": "contract IERC20",
+                            "name": "",
+                            "type": "address"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "address",
+                            "name": "_to",
+                            "type": "address"
+                        }
+                    ],
+                    "name": "withdrawAll",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                }
+            ]
+        });
+        const transaction = prepareContractCall({
+            contract,
+            method: "getRaiToken", // <- this gets inferred from the contract
+            params: [
+                "0xea72Cd032bD0f34B460e41A81e3a9731d1013030"
+            ],
+        });
+        sendTx(transaction as any);   
+    }
+    console.log("transactionResult",transactionResult)
+    //console.log(address)
 
     return(
         <div className="flex flex-row justify-center items-center h-screen">
@@ -40,19 +131,15 @@ const Mining = () =>{
                                 <img width={70} className="w-full h-60 rounded-lg" src="/assets/background/mining-background.png" alt="gif" />
                                 <img width={70} className="absolute top-[35%] left-[60%]" src="/assets/background/stone.png" alt="stone" />
                                 <img width={150} className="absolute top-[25%] left-[35%]" src="/assets/pet/mining.gif" alt="mining" />
-                                <button disabled={isDisable} className="text-white flex justify-center items-center flex-row font-semibold absolute bottom-0 py-3 rounded-lg left-1/2 transform -translate-x-1/2">
-                                    {
-                                        isDisable?(
-                                            <CountDownTimer setIsDisable={setDisable} seconds={seconds}/>
-                                        ):(
-                                            isClaim?
-                                            (
-                                                <img width={550} src="/assets/button/claim-button.png" alt="claim" />
-                                            ):(
-                                                <img width={550} src="/assets/button/claim-button.png" alt="claim" />
-                                            )
-                                        )
-                                    }
+                                <button onClick={onFaucet} className="text-white flex justify-center items-center flex-row font-semibold absolute bottom-0 py-3 rounded-lg left-1/2 transform -translate-x-1/2">
+                                {
+                                    isClaim?
+                                    (
+                                        <img width={550} src="/assets/button/claim-button-pressed.png" alt="claim" />
+                                    ):(
+                                        <img width={550} src="/assets/button/claim-button.png" alt="claim" />
+                                    )
+                                }
                                 </button>
                             </div>
                             <div className="mt-5 pb-10 flex flex-row justify-between gap-3">

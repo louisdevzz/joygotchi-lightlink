@@ -1,24 +1,29 @@
 'use client'
-import { useState,useEffect } from "react";
+import { useState,useEffect, useMemo } from "react";
 import Link from "next/link";
-import { useAccount } from "wagmi";
+
+import { useRouter } from "next/router";
+import { createThirdwebClient, defineChain, getContract } from "thirdweb";
+import { ConnectButton, lightTheme, useActiveAccount, useIsAutoConnecting } from "thirdweb/react";
+
+const client = createThirdwebClient({
+    clientId: process.env.CLIENT_ID!
+});
+import { inAppWallet } from "thirdweb/wallets";
 
 
 const Header = () =>{
-    const {address} = useAccount();
-    const [account, setAccount] = useState<string|null>(address||null)
+    const wallets = [inAppWallet()]
+    const account = useActiveAccount();
     const [isShow, setIsShow] = useState<boolean>(false);
     const [status, setStatus] = useState<string|null>(null);
-
-    
-    //console.log("address",account)
+    const router = useRouter();
 
     const truncateString = (str: string)=>{
         const format = str.replace("0x","");
         if(format.length > 6) return "0x"+format.slice(0,2)+'...'+format.slice(-2);
         return "0x"+format
     }
-    
     return(
         <div className="sticky w-full fix-header top-0 z-10 md:rounded-t-lg">
             {status&&(
@@ -43,13 +48,28 @@ const Header = () =>{
                     </div>
                     
                     <div className="flex flex-row gap-4 items-center">
-                        {
-                            account&&(
-                                <Link href={"/mint?tab=2"} className="px-2 cursor-pointer py-0.5 h-8 rounded-full bg-[#a9c6e4]">
-                                    <small className="text-white">{truncateString(account as string)}</small>
-                                </Link>
-                            )
-                        }
+                        <ConnectButton connectModal={{ size: "wide" }} detailsButton={{
+                            render:()=>{
+                                return(
+                                    <div className="px-2 cursor-pointer py-0.5 h-8 rounded-full bg-[#a9c6e4]">
+                                        {truncateString(account?.address as string)}
+                                    </div>
+                                )
+                            }
+                        }} theme={lightTheme({
+                            colors:{
+                                connectedButtonBg: "white",
+                            },
+                            
+                        })} signInButton={{
+                            label: "Connect Wallet"
+                        }} autoConnect client={client} wallets={wallets} />
+                        {/* <ConnectButton client={client} chain={{
+                            id:1891,
+                            rpc:`https://1891.rpc.thirdweb.com/${process.env.CLIENT_ID!}`
+                        }}
+                        wallets={wallets}
+                        /> */}
                     </div>
                 </div>
                 
