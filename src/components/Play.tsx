@@ -26,9 +26,9 @@ const Play = () => {
     const [raiTokenBalance, setRaiTokenBalance] = useState<string|null>(null)
     const [loading, setLoading] = useState<boolean>(false);
     const [namePet,setNamePet] = useState<string|null>(null);
-    const [petLists, setPetLists] = useState<any|null>([]);
     const [petList, setPetList] = useState<any|null>([]);
     const [index, setIndex] = useState<number>(0);
+    const [indexItem, setIndexItem] = useState<number>(0);
     const [status, setStatus] = useState<string|null>(null);
     const seconds = 0;
     const [error, setError] = useState<string|null>(null)
@@ -119,7 +119,7 @@ const Play = () => {
         const data = response.data;
         if(data){
             const balance = data.items[0].value
-            setRaiTokenBalance((Number(balance)*Math.pow(10,-18)).toString())
+            setRaiTokenBalance((Number(balance)*Math.pow(10,-18)).toFixed(0))
         }
     }
 
@@ -134,8 +134,6 @@ const Play = () => {
             setPetList(data.items)
         }
     }
-
-
     
 
     const onChangeName = async() =>{
@@ -179,6 +177,24 @@ const Play = () => {
         return value;
     }
 
+
+    const nFormatter = (num:number, digits:number) => {
+        const lookup = [
+            { value: 1, symbol: "" },
+            { value: 1e3, symbol: "k" },
+            { value: 1e6, symbol: "M" },
+            { value: 1e9, symbol: "G" },
+            { value: 1e12, symbol: "T" },
+            { value: 1e15, symbol: "P" },
+            { value: 1e18, symbol: "E" }
+        ];
+        const regexp = /\.0+$|(?<=\.[0-9]*[1-9])0+$/;
+        const item = lookup.findLast(item => num >= item.value);
+        return item ? (num / item.value).toFixed(digits).replace(regexp, "").concat(item.symbol) : "0";
+    }
+
+    // let formatter = Intl.NumberFormat('en', { notation: 'compact' });
+    //console.log("data",nFormatter(440000000000000000,1))
     //console.log("petlist",dataPet)
     //console.log("eth",ethBalance)
     //console.log("raitoken",raiTokenBalance)
@@ -301,11 +317,11 @@ const Play = () => {
                                     <span className="text-[#00000088]">STATUS</span>
                                 </div>
                                 <div className="flex flex-col text-center">
-                                    <p className="text-xl">{dataPet ? dataPet[2].toString():"-"}</p>
+                                    <p className="text-xl">{dataPet ? nFormatter(Number(dataPet[2].toString()),1):"-"}</p>
                                     <span className="text-[#00000088]">SCORE</span>
                                 </div>
                             </div>
-                            <BuyItem petLists={petLists} index={index} status={setStatus} error={setError}/>
+                            <BuyItem petList={petList} index={index} loading={setLoading} status={setStatus} error={setError}/>
                         </div>
                     </div>
                 </div>

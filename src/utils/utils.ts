@@ -1,3 +1,4 @@
+import { createThirdwebClient } from 'thirdweb';
 import type {
     TransactionReceipt,
     TransactionLegacy,
@@ -26,3 +27,7 @@ export const stringifyTransaction = (
         2,
     );
 };
+
+export  const client = createThirdwebClient({
+  clientId: process.env.CLIENT_ID!
+});

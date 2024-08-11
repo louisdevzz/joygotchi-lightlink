@@ -1,4 +1,9 @@
-import { useState } from "react"
+import { useCallback, useEffect, useState } from "react"
+import { getContract, prepareContractCall, toWei } from "thirdweb";
+import { useActiveAccount, useReadContract, useSendTransaction } from "thirdweb/react";
+import { client } from "@/utils/utils";
+import { itemAbi, petAddress, tokenAbi } from "@/utils/abi";
+
 
 type Button = {
     name: string,
@@ -6,8 +11,107 @@ type Button = {
     width: number
 }
 
-const BuyItem = ({petLists,index,status,error}:{petLists:any,index:number,status:any,error:any}) =>{
+const BuyItem = ({petList,index,status,loading,error}:{petList:any,index:number,status:any,loading: any,error:any}) =>{
+    const account = useActiveAccount()
     const [currentIndex, setCurrentIndex] = useState<number>(0);
+    const [itemId, setItemId] = useState<number>(0)
+    const { mutate: sendTransaction, data: txResult,isSuccess: isSuccessTx,isPending: isPendingTx,isError,error: errorTx } = useSendTransaction();
+    const { mutate: sendTx, error: errorApprove,isSuccess: isSuccessApprove,isPending: isPendingApprove,data: dataApprove } = useSendTransaction();
+    const immidiateUseItemsContract = "0x0beA242D563fc68f47FDf0A6444DaF701b80F013"
+    const contractAddress = "0x5D31C0fF4AAF1C906B86e65fDd3A17c7087ab1E3"
+    const tokenAddress = "0x774683C155327424f3d9b12a85D78f410F6E53A1"
+    const approveAmount = toWei("20000")
+
+    const contractPet = getContract({
+        client,
+        address: contractAddress,
+        chain: {
+            id:1891,
+            rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
+        },
+        abi: petAddress
+    });
+    const contractToken = getContract({
+        client,
+        address: tokenAddress,
+        chain: {
+            id:1891,
+            rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
+        },
+        abi: tokenAbi
+    });
+    
+    const { data: isPetAlive } = useReadContract({
+        contract: contractPet,
+        method: "isPetAlive",
+        params: [BigInt(index)],
+    });
+    const { data: allowance, error: errorAllowance, isError: isErrorAllownce } = useReadContract({
+        contract: contractToken,
+        method: "allowance",
+        params: [account?.address as string,immidiateUseItemsContract],
+    });
+    //console.log("allowance",allowance)
+    const sendTransactionBuyItem = useCallback(()=>{
+        if(dataApprove&&allowance){
+            console.log("buy item")
+            loading(false)
+            if(allowance >= approveAmount){
+                const itemsContract = getContract({
+                    client,
+                    address: immidiateUseItemsContract,
+                    chain: {
+                        id:1891,
+                        rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
+                    },
+                    abi: itemAbi
+                });
+                const transaction = prepareContractCall({
+                    contract: itemsContract,
+                    method: "buyImidiateUseItem",
+                    params: [petList[index]?.id,BigInt(itemId)]
+                });
+                sendTransaction(transaction as any); 
+            }else{
+                error("Insufficient allowance")
+                setTimeout(() => {
+                    error(null)
+                }, 1200); 
+                return ;
+            }
+        }
+    },[dataApprove])
+
+    useEffect(()=>{
+        sendTransactionBuyItem()
+    },[sendTransactionBuyItem])
+
+
+    useEffect(()=>{
+        if(isSuccessTx){
+            loading(false)
+            status("Buy item successful")
+            setTimeout(() => {
+                status(null)
+            }, 1200); 
+        }
+        if(isError){
+            console.log(errorTx)
+            loading(false)
+            error("Buy item failed!")
+            setTimeout(() => {
+                error(null)
+            }, 1200); 
+        }
+        if(isPendingTx){
+            loading(true)
+        }
+        if(isPendingApprove){
+            loading(true)
+        }
+
+    },[isSuccessTx,isError,isPendingTx,isPendingApprove])
+
     const listButton = [
         {
             name:"water",
@@ -31,20 +135,36 @@ const BuyItem = ({petLists,index,status,error}:{petLists:any,index:number,status
         }
     ];
 
+    const approveSpending = () =>{
+        const itemsContract = getContract({
+            client,
+            address: tokenAddress,
+            chain: {
+                id:1891,
+                rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
+            },
+            abi: tokenAbi
+        });
+        const transaction = prepareContractCall({
+            contract: itemsContract,
+            method: "approve",
+            params: [immidiateUseItemsContract,approveAmount]
+        });
+        sendTx(transaction as any); 
+    }
+
     const onBuyAccessory = async(itemId:any) =>{
-        try{
-            status("Loading...")
-            status(null)
-            error('Pet is not Alive')
+        if(isPetAlive){
+            approveSpending()
+        }else{
+            error("Pet not is Alive!")
             setTimeout(() => {
                 error(null)
-            }, 1000);
-        }catch(err){
-            console.log(err)
-            error(error)
+            }, 500); 
+            error("Please buy item revive pet!")
             setTimeout(() => {
                 error(null)
-            }, 1000);
+            }, 1200); 
         }
     }
     
