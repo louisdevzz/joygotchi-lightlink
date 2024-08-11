@@ -28,12 +28,7 @@ const Login = () =>{
 									</div>
 								)
 							}
-						}} theme={lightTheme({
-							colors:{
-								connectedButtonBg: "white",
-							},
-							
-						})} signInButton={{
+						}} theme={"dark"} signInButton={{
 							label: "Connect Wallet"
 						}} autoConnect client={client} wallets={wallets} />
 					</div>

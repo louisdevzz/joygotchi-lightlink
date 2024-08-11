@@ -4,7 +4,6 @@ import axios from "axios";
 import { useEffect, useState } from "react"
 
 import { createThirdwebClient, prepareContractCall,getContract } from "thirdweb";
-import { getOwnedNFTs } from "thirdweb/extensions/erc721";
 import { useActiveAccount, useReadContract,useSendTransaction,useWalletBalance } from "thirdweb/react";
 
 const client = createThirdwebClient({
@@ -18,10 +17,12 @@ const Mint = () =>{
     const [DEF, setDEF] = useState<string|null>("100")
     const [image, setImage] = useState<string|null>("/assets/animation/blackdragon/1.gif")
     const [status, setStatus] = useState<string|null>(null);
+    const [error, setError] = useState<string|null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
     const [isApprove, setIsApprove] = useState<boolean>(false);
     const [currentIndex, setCurrentIndex] = useState<number>(0)
-    const { mutate: sendTx, data: transactionResult,isError,error,isSuccess } = useSendTransaction();
-    const { mutate: sendTransaction, data: txResult,isError: isErrorTx,error: ErrorTx,isSuccess: isSuccessTx } = useSendTransaction();
+    const { mutate: sendTx, data: transactionResult,isError,error: errorTrx,isSuccess, isPending: isPendingTransaction } = useSendTransaction();
+    const { mutate: sendTransaction, data: txResult,isSuccess: isSuccessTx } = useSendTransaction();
     const contractAddress = "0x5D31C0fF4AAF1C906B86e65fDd3A17c7087ab1E3"
     const faucetAddress= "0x937529264EBF13a0203cfAf7bBf09a3822f6636a"
     const tokenAdrees = "0x774683C155327424f3d9b12a85D78f410F6E53A1"
@@ -31,8 +32,26 @@ const Mint = () =>{
         rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
     }
 
+    useEffect(()=>{
+        if(isSuccess){
+            setLoading(false)
+            setStatus("Mint successfull")
+            setTimeout(() => {
+                setStatus(null)
+            }, 1200); 
+        }
+        if(isError){
+            setLoading(false)
+            setError("Mint failed!")
+            setTimeout(() => {
+                setError(null)
+            }, 1200); 
+        }
+        if(isPendingTransaction){
+            setLoading(true)
+        }
+    },[isSuccess,isError,isPendingTransaction])
 
-    
     
     const contractToken = getContract({
         client,
@@ -66,7 +85,7 @@ const Mint = () =>{
         client,
     });
     
-    console.log("tokenBlanceData",tokenBlanceData)
+    //console.log("tokenBlanceData",tokenBlanceData)
     const onMintBlackDragon =() =>{
         setNamePet("BLACK DRAGON")
         setATK("100")
@@ -93,7 +112,7 @@ const Mint = () =>{
             },
             abi: petAddress
         });
-        if(allowance&&(Number(allowance.toString().replace("n","")) == 0)){
+        if(allowance&&(Number(allowance.toString()) == 0)){
             const transactionAllowance = prepareContractCall({
                 contract: contractToken,
                 method: "approve",
@@ -119,29 +138,30 @@ const Mint = () =>{
         
         
     }
-    console.log('allowance',allowance)
-    if(ErrorTx){
-        console.log("ErrorTx",ErrorTx)
-    }
-
-    if(isError){
-        console.log("isError",error)
-    }
-
-    if(txResult){
-        console.log("txResult",txResult)
-    }
-
-    if(transactionResult){
-        console.log("transactionResult",transactionResult)
-    }
+    //console.log('allowance',allowance)
     return(
         <>
             {status&&(
-                <div className="fixed z-50 bg-[#97b5d5] w-60 h-10 top-5 left-[52%] rounded-lg border-2 border-[#e5f2f8] shadow-sm transform -translate-x-1/2 transition-all delay-75">
+                <div className="fixed md:absolute z-50 bg-[#d4edda] w-60 h-10 top-5 left-[52%] rounded-lg border-2 border-[#c3e6cb] shadow-sm transform -translate-x-1/2 transition-all delay-75">
                     <div className="flex flex-row w-full px-3 items-center h-full gap-2">
                         <img width={22} src="/assets/icon/success.svg" alt="success" />
-                        <small className="text-[#2d3c53] text-sm font-semibold">{status}</small>
+                        <small className="text-[#155724] text-sm font-semibold">{status}</small>
+                    </div>
+                </div>
+            )}
+            {loading&&(
+                <div className="fixed md:absolute z-50 bg-[#fef3c7] w-60 h-10 top-5 left-[52%] rounded-lg border-2 border-[#fabe25] shadow-sm transform -translate-x-1/2 transition-all delay-75">
+                    <div className="flex flex-row w-full px-3 items-center h-full gap-2">
+                        <img width={22} src="/assets/icon/reload.svg" alt="reload" />
+                        <small className="text-[#f49d0c] text-sm font-semibold">Loading....</small>
+                    </div>
+                </div>
+            )}
+            {error&&(
+                <div className="fixed md:absolute z-50 bg-[#f8d7da] w-60 h-10 top-5 left-[52%] rounded-lg border-2 border-[#FF0000] shadow-sm transform -translate-x-1/2 transition-all delay-75">
+                    <div className="flex flex-row w-full px-3 items-center h-full gap-2">
+                        <img width={22} src="/assets/icon/error.svg" alt="error" />
+                        <small className="text-[#FF0000] text-sm font-semibold">{error}</small>
                     </div>
                 </div>
             )}

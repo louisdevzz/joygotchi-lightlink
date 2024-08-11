@@ -19,15 +19,16 @@ import { petAddress } from '@/utils/abi';
 const Play = () => {
     const wallets = [inAppWallet()]
     const account = useActiveAccount();
-    const { mutate: sendTransaction, data: txResult,isError: isErrorTx,error: ErrorTx,isSuccess: isSuccessTx } = useSendTransaction();
+    const { mutate: sendTransaction, data: txResult,isSuccess: isSuccessTx,isPending: isPendingTx } = useSendTransaction();
     const [isShow, setIsShow] = useState<boolean>(false)
+    const [ethBalance, setEthBalance] = useState<string|null>(null)
+    const [raiTokenBalance, setRaiTokenBalance] = useState<string|null>(null)
     const [loading, setLoading] = useState<boolean>(false);
     const [namePet,setNamePet] = useState<string|null>(null);
     const [petLists, setPetLists] = useState<any|null>([]);
     const [petList, setPetList] = useState<any|null>([]);
     const [index, setIndex] = useState<number>(0);
     const [status, setStatus] = useState<string|null>(null);
-    const [infoPet, setDataPet] = useState<any>([])
     const seconds = 0;
     const [error, setError] = useState<string|null>(null)
     const router = useRouter();
@@ -38,6 +39,43 @@ const Play = () => {
             setNamePet(petList[index].metadata.name)
         }
     },[petList])
+
+    useEffect(()=>{
+        if(!account){
+            router.push("/login")
+        }
+        if(account){
+            loadNFT()
+            fetchEthBalance()
+            fetchRaiToken()
+        }
+    },[account])
+
+    const fetchEthBalance = async() =>{
+        const response = await axios.get(`https://pegasus.lightlink.io/api/v2/addresses/${account?.address}`,{
+            headers:{
+                "Content-Type": "application/json"
+            }
+        })
+        const data = response.data;
+        if(data){
+            const balance = data.coin_balance
+            setEthBalance((Number(balance)*Math.pow(10,-18)).toFixed(6))
+        }
+    }
+
+    const fetchRaiToken = async() =>{
+        const response = await axios.get(`https://pegasus.lightlink.io/api/v2/addresses/${account?.address}/tokens?type=ERC-20`,{
+            headers:{
+                "Content-Type": "application/json"
+            }
+        })
+        const data = response.data;
+        if(data){
+            const balance = data.items[0].value
+            setRaiTokenBalance((Number(balance)*Math.pow(10,-18)).toString())
+        }
+    }
 
     const contractPet = getContract({
         client,
@@ -72,15 +110,6 @@ const Play = () => {
         console.log('You have not pet')
     }
 
-
-    useEffect(()=>{
-        if(!account){
-            router.push("/login")
-        }
-        if(account){
-            loadNFT()
-        }
-    },[account])
     
 
     const onChangeName = async() =>{
@@ -103,14 +132,23 @@ const Play = () => {
         
     }
 
+    const truncateNamePet = (str: string)=>{
+        if(str&&str.length > 10){
+            return str.slice(0,10)+"..."
+        }
+        return str
+    }
+
     const truncateString = (str: string)=>{
         const format = str.replace("0x","");
         if(format.length > 6) return "0x"+format.slice(0,2)+'...'+format.slice(-2);
         return "0x"+format
     }
-    //console.log("petlist",dataPet&&dataPet[6])
+    //console.log("petlist",dataPet)
+    //console.log("eth",ethBalance)
+    //console.log("raitoken",raiTokenBalance)
     return(
-        <div className="h-full md:max-h-[700px] w-full md:max-w-[380px] rounded-lg shadow-lg relative overflow-hidden">
+        <div className="h-full md:max-h-[700px] w-full md:max-w-[400px] rounded-lg shadow-lg relative overflow-hidden">
             <div className="bg-[#e5f2f8] flex flex-col h-full w-full overflow-hidden">
                 <div className="w-full sticky top-0 z-20">
                         {
@@ -141,19 +179,19 @@ const Play = () => {
                                 <div className="flex flex-col gap-1">
                                     <div className="flex flex-row gap-2">
                                         <img width={25} src="/assets/item/coin.png" alt="coin" />
-                                        <p className="text-[#fff]">0.01</p>
+                                        <p className="text-[#fff]">{ethBalance ? ethBalance : "-"}</p>
                                     </div>
                                     <div className="flex flex-row gap-2">
                                         <img width={25} src="/assets/item/credit_card.png" alt="coin" />
-                                        <p className="text-[#fff]">19000</p>
+                                        <p className="text-[#fff]">{raiTokenBalance?raiTokenBalance:"-"}</p>
                                     </div>
                                 </div>
-                                <div onClick={()=>setIsShow(true)} className="flex flex-row gap-1 items-center -mt-1 ml-4">
-                                    <p className="text-[#fff]">{namePet}</p>
+                                <div onClick={()=>setIsShow(true)} className="flex flex-row gap-1 items-center -mt-1 ml-2">
+                                    <p className="text-[#fff]">{truncateNamePet(namePet as string)}</p>
                                     <img width={14} src="/assets/icon/pen.svg" alt="pen" />
                                 </div>
-                                <div className="flex flex-row gap-4 mt-1 items-center">
-                                <ConnectButton connectModal={{ size: "wide" }} detailsButton={{
+                                <div className="flex flex-row  mt-1 items-center">
+                                    <ConnectButton connectModal={{ size: "wide" }} detailsButton={{
                                         render:()=>{
                                             return(
                                                 <div className="px-2 cursor-pointer py-0.5 h-8 rounded-full bg-[#a9c6e4]">
@@ -161,12 +199,7 @@ const Play = () => {
                                                 </div>
                                             )
                                         }
-                                    }} theme={lightTheme({
-                                        colors:{
-                                            connectedButtonBg: "white",
-                                        },
-                                        
-                                    })} signInButton={{
+                                    }} theme={"dark"} signInButton={{
                                         label: "Connect Wallet"
                                     }} autoConnect client={client} wallets={wallets} />
                                 </div>

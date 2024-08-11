@@ -3,16 +3,16 @@ import CountDownTimer from "@/components/CountDownTimer";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { faucetAbi } from "@/utils/abi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createThirdwebClient, getContract, getGasPrice, prepareContractCall, prepareTransaction, sendAndConfirmTransaction, sendTransaction, simulateTransaction } from "thirdweb";
-import { lightTheme, TransactionButton, useActiveAccount, useSendTransaction } from "thirdweb/react";
-import { generateAccount, inAppWallet } from "thirdweb/wallets";
+import { useActiveAccount, useSendTransaction,useWaitForReceipt } from "thirdweb/react";
 const client = createThirdwebClient({
     clientId: process.env.CLIENT_ID!
 });
 
 const Mining = () =>{
     const [status, setStatus] = useState<string|null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
     const [isDisable, setDisable] = useState<boolean>(false);
     const oldSeconds = 0
     const [seconds,setSeconds] = useState<number>(Math.abs(Math.floor((Date.now()-oldSeconds)/1000) - 60));
@@ -21,17 +21,38 @@ const Mining = () =>{
     const [isClaim, setIsClaim] = useState<boolean>(false)
     const faucetAddress= "0x937529264EBF13a0203cfAf7bBf09a3822f6636a"
     const acccont = useActiveAccount();
-    const { mutate: sendTx, data: transactionResult } = useSendTransaction();
-	console.log("address", acccont?.address);
+    const { mutate: sendTx, data: transactionResult,isSuccess,isError,isPending } = useSendTransaction();
+    const chain = {
+        id:1891,
+        rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
+    }
+	//console.log("address", acccont?.address);
+
+    useEffect(()=>{
+        if(isSuccess){
+            setLoading(false)
+            setStatus("Claim successfull")
+            setTimeout(() => {
+                setStatus(null)
+            }, 1200); 
+        }
+        if(isError){
+            setLoading(false)
+            setError("Claim failed!")
+            setTimeout(() => {
+                setError(null)
+            }, 1200); 
+        }
+        if(isPending){
+            setLoading(true)
+        }
+    },[isSuccess,isError,isPending])
 
     const onFaucet = async() =>{
         const contract = getContract({
             client,
             address: faucetAddress,
-            chain: {
-                id:1891,
-                rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
-            },
+            chain,
             abi: [
                 {
                     "inputs": [
@@ -100,24 +121,35 @@ const Mining = () =>{
             ],
         });
         sendTx(transaction as any);   
+        setIsClaim(true)
+        setTimeout(() => {
+            setIsClaim(false)
+        }, 120);
     }
-    console.log("transactionResult",transactionResult)
-    //console.log(address)
-
+    
+    
     return(
         <div className="flex flex-row justify-center items-center h-screen">
             <div className="h-full md:max-h-[700px] w-full md:max-w-[380px] rounded-lg shadow-lg relative">
                 <div className="bg-[#e5f2f8] h-full w-full flex flex-col relative">
                     {status&&(
-                        <div className="fixed z-50 bg-[#d4edda] w-60 h-10 top-5 left-[52%] rounded-lg border-2 border-[#c3e6cb] shadow-sm transform -translate-x-1/2 transition-all delay-75">
+                        <div className="fixed md:absolute z-50 bg-[#d4edda] w-60 h-10 top-5 left-[52%] rounded-lg border-2 border-[#c3e6cb] shadow-sm transform -translate-x-1/2 transition-all delay-75">
                             <div className="flex flex-row w-full px-3 items-center h-full gap-2">
                                 <img width={22} src="/assets/icon/success.svg" alt="success" />
                                 <small className="text-[#155724] text-sm font-semibold">{status}</small>
                             </div>
                         </div>
                     )}
+                    {loading&&(
+                        <div className="fixed md:absolute z-50 bg-[#fef3c7] w-60 h-10 top-5 left-[52%] rounded-lg border-2 border-[#fabe25] shadow-sm transform -translate-x-1/2 transition-all delay-75">
+                            <div className="flex flex-row w-full px-3 items-center h-full gap-2">
+                                <img width={22} src="/assets/icon/reload.svg" alt="reload" />
+                                <small className="text-[#f49d0c] text-sm font-semibold">Loading....</small>
+                            </div>
+                        </div>
+                    )}
                     {error&&(
-                        <div className="fixed z-50 bg-[#f8d7da] w-60 h-10 top-5 left-[52%] rounded-lg border-2 border-[#FF0000] shadow-sm transform -translate-x-1/2 transition-all delay-75">
+                        <div className="fixed md:absolute z-50 bg-[#f8d7da] w-60 h-10 top-5 left-[52%] rounded-lg border-2 border-[#FF0000] shadow-sm transform -translate-x-1/2 transition-all delay-75">
                             <div className="flex flex-row w-full px-3 items-center h-full gap-2">
                                 <img width={22} src="/assets/icon/error.svg" alt="error" />
                                 <small className="text-[#FF0000] text-sm font-semibold">{error}</small>

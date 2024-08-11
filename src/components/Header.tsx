@@ -49,6 +49,9 @@ const Header = () =>{
                     
                     <div className="flex flex-row gap-4 items-center">
                         <ConnectButton connectModal={{ size: "wide" }} detailsButton={{
+                            style:{
+                                background: "#fff",
+                            },
                             render:()=>{
                                 return(
                                     <div className="px-2 cursor-pointer py-0.5 h-8 rounded-full bg-[#a9c6e4]">
@@ -56,12 +59,10 @@ const Header = () =>{
                                     </div>
                                 )
                             }
-                        }} theme={lightTheme({
-                            colors:{
-                                connectedButtonBg: "white",
+                        }} theme={"dark"} signInButton={{
+                            style:{
+                                background: "#fff"
                             },
-                            
-                        })} signInButton={{
                             label: "Connect Wallet"
                         }} autoConnect client={client} wallets={wallets} />
                         {/* <ConnectButton client={client} chain={{
