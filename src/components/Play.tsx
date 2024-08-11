@@ -19,7 +19,6 @@ import { petAddress } from '@/utils/abi';
 const Play = () => {
     const wallets = [inAppWallet()]
     const account = useActiveAccount();
-    const { mutate: sendTransaction, data: txResult,isSuccess: isSuccessTx,isPending: isPendingTx } = useSendTransaction();
     const { mutate: sendTx, data: txNamePet,isSuccess: isSuccessNamePet, isPending: isPendingNamePet,isError: isErrorNamePet } = useSendTransaction();
     const [isShow, setIsShow] = useState<boolean>(false)
     const [ethBalance, setEthBalance] = useState<string|null>(null)
@@ -45,7 +44,7 @@ const Play = () => {
         abi: petAddress
     });
 
-    const { data: dataPet, isError } = useReadContract({
+    const { data: dataPet, isError,refetch } = useReadContract({
         contract: contractPet,
         method: "getPetInfo",
         params: [petList[index]?.id],
@@ -195,7 +194,7 @@ const Play = () => {
 
     // let formatter = Intl.NumberFormat('en', { notation: 'compact' });
     //console.log("data",nFormatter(440000000000000000,1))
-    //console.log("petlist",dataPet)
+    //console.log("petlist",petList)
     //console.log("eth",ethBalance)
     //console.log("raitoken",raiTokenBalance)
     //console.log("namepet",namePet)
@@ -282,7 +281,7 @@ const Play = () => {
                             </div>
                             <div className="px-3 py-2 w-[150px] rounded-full text-center absolute top-2/3 left-1/3  h-10 bg-[#f48f59]">
                                 {/* <span>0h:57m:35s</span> */}
-                                <CountDownTimer seconds={seconds}/>
+                                <CountDownTimer seconds={dataPet ? Number(dataPet[4]) : 0}/>
                             </div>
                         </div>
                 </div>
@@ -305,7 +304,7 @@ const Play = () => {
                             </div>
                             <div className="mt-2 bg-[#a9c6e4] w-full flex-row flex justify-between rounded-lg px-3 py-4">
                                 <div className="flex flex-col text-center">
-                                    <p className="text-xl">{dataPet ? dataPet[6].toString():"-"} NEAR</p>
+                                    <p className="text-xl">{dataPet ? dataPet[6].toString():"-"} ETH</p>
                                     <span className="text-[#00000088]">REWARDS</span>
                                 </div>
                                 <div className="flex flex-col text-center">
@@ -321,7 +320,10 @@ const Play = () => {
                                     <span className="text-[#00000088]">SCORE</span>
                                 </div>
                             </div>
-                            <BuyItem petList={petList} index={index} loading={setLoading} status={setStatus} error={setError}/>
+                            <BuyItem petList={petList} index={index} loading={setLoading} status={setStatus} error={setError} refetch={refetch} optionFetchs={{
+                                fetchEthBalance,
+                                fetchRaiToken
+                            }}/>
                         </div>
                     </div>
                 </div>

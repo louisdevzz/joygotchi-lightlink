@@ -11,7 +11,13 @@ type Button = {
     width: number
 }
 
-const BuyItem = ({petList,index,status,loading,error}:{petList:any,index:number,status:any,loading: any,error:any}) =>{
+interface options{
+    fetchEthBalance?:any,
+    fetchRaiToken?:any
+}
+
+
+const BuyItem = ({petList,index,status,loading,error, refetch, optionFetchs}:{petList:any,index:number,status:any,loading: any,error:any,refetch:any, optionFetchs:options}) =>{
     const account = useActiveAccount()
     const [currentIndex, setCurrentIndex] = useState<number>(0);
     const [itemId, setItemId] = useState<number>(0)
@@ -41,56 +47,35 @@ const BuyItem = ({petList,index,status,loading,error}:{petList:any,index:number,
         abi: tokenAbi
     });
     
-    const { data: isPetAlive } = useReadContract({
+    const { data: isPetAlive, refetch: refetchPet } = useReadContract({
         contract: contractPet,
         method: "isPetAlive",
-        params: [BigInt(index)],
+        params: [petList[index]?.id],
     });
+    //console.log("isPetAlive",isPetAlive)
     const { data: allowance, error: errorAllowance, isError: isErrorAllownce } = useReadContract({
         contract: contractToken,
         method: "allowance",
         params: [account?.address as string,immidiateUseItemsContract],
     });
     //console.log("allowance",allowance)
-    const sendTransactionBuyItem = useCallback(()=>{
-        if(dataApprove&&allowance){
-            console.log("buy item")
-            loading(false)
-            if(allowance >= approveAmount){
-                const itemsContract = getContract({
-                    client,
-                    address: immidiateUseItemsContract,
-                    chain: {
-                        id:1891,
-                        rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
-                    },
-                    abi: itemAbi
-                });
-                const transaction = prepareContractCall({
-                    contract: itemsContract,
-                    method: "buyImidiateUseItem",
-                    params: [petList[index]?.id,BigInt(itemId)]
-                });
-                sendTransaction(transaction as any); 
-            }else{
-                error("Insufficient allowance")
-                setTimeout(() => {
-                    error(null)
-                }, 1200); 
-                return ;
-            }
-        }
-    },[dataApprove])
 
     useEffect(()=>{
-        sendTransactionBuyItem()
-    },[sendTransactionBuyItem])
+        if(Number(localStorage.getItem("allowanceApprove")) == 0 || allowance == BigInt(0)){
+            approveSpending()
+        }
+        localStorage.setItem("allowanceApprove",allowance?.toString() as string)
+    },[])
 
 
     useEffect(()=>{
         if(isSuccessTx){
             loading(false)
             status("Buy item successful")
+            refetchPet()
+            refetch()
+            optionFetchs.fetchEthBalance()
+            optionFetchs.fetchRaiToken()
             setTimeout(() => {
                 status(null)
             }, 1200); 
@@ -106,11 +91,7 @@ const BuyItem = ({petList,index,status,loading,error}:{petList:any,index:number,
         if(isPendingTx){
             loading(true)
         }
-        if(isPendingApprove){
-            loading(true)
-        }
-
-    },[isSuccessTx,isError,isPendingTx,isPendingApprove])
+    },[isSuccessTx,isError,isPendingTx])
 
     const listButton = [
         {
@@ -154,8 +135,31 @@ const BuyItem = ({petList,index,status,loading,error}:{petList:any,index:number,
     }
 
     const onBuyAccessory = async(itemId:any) =>{
-        if(isPetAlive){
-            approveSpending()
+        console.log("itemid",itemId)
+        if(isPetAlive || itemId==3){
+            if(allowance&&(allowance > BigInt(0))){
+                const itemsContract = getContract({
+                    client,
+                    address: immidiateUseItemsContract,
+                    chain: {
+                        id:1891,
+                        rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
+                    },
+                    abi: itemAbi
+                });
+                const transaction = prepareContractCall({
+                    contract: itemsContract,
+                    method: "buyImidiateUseItem",
+                    params: [petList[index]?.id,BigInt(itemId)]
+                });
+                sendTransaction(transaction as any); 
+            }else{
+                error("Insufficient allowance")
+                setTimeout(() => {
+                    error(null)
+                }, 1200); 
+                return ;
+            }
         }else{
             error("Pet not is Alive!")
             setTimeout(() => {
@@ -189,7 +193,7 @@ const BuyItem = ({petList,index,status,loading,error}:{petList:any,index:number,
                         <p className="text-[#00000088]">50 PTS & 12 HOURS TOD</p>
                     </div> */}
                     <div className="flex flex-row justify-center w-full mt-2">
-                        <button onClick={()=>onBuyAccessory(currentIndex+1)} className="bg-[#2f3b53] w-48 h-10 rounded-lg">
+                        <button onClick={()=>onBuyAccessory(currentIndex)} className="bg-[#2f3b53] w-48 h-10 rounded-lg">
                             <span className="text-[#fff] font-semibold">BUY</span>
                         </button>
                     </div>
@@ -204,7 +208,7 @@ const BuyItem = ({petList,index,status,loading,error}:{petList:any,index:number,
                         <p className="text-[#00000088]">50 PTS & 12 HOURS TOD</p>
                     </div> */}
                     <div className="flex flex-row justify-center w-full mt-2">
-                        <button onClick={()=>onBuyAccessory(currentIndex+1)} className="bg-[#2f3b53] w-48 h-10 rounded-lg">
+                        <button onClick={()=>onBuyAccessory(currentIndex)} className="bg-[#2f3b53] w-48 h-10 rounded-lg">
                             <span className="text-[#fff] font-semibold">BUY</span>
                         </button>
                     </div>
@@ -219,7 +223,7 @@ const BuyItem = ({petList,index,status,loading,error}:{petList:any,index:number,
                         <p className="text-[#00000088]">50 PTS & 12 HOURS TOD</p>
                     </div> */}
                     <div className="flex flex-row justify-center w-full mt-2">
-                        <button onClick={()=>onBuyAccessory(currentIndex+1)} className="bg-[#2f3b53] w-48 h-10 rounded-lg">
+                        <button onClick={()=>onBuyAccessory(currentIndex)} className="bg-[#2f3b53] w-48 h-10 rounded-lg">
                             <span className="text-[#fff] font-semibold">BUY</span>
                         </button>
                     </div>
@@ -234,7 +238,7 @@ const BuyItem = ({petList,index,status,loading,error}:{petList:any,index:number,
                         <p className="text-[#00000088]">50 PTS & 12 HOURS TOD</p>
                     </div> */}
                     <div className="flex flex-row justify-center w-full mt-2">
-                        <button onClick={()=>onBuyAccessory(currentIndex+1)} className="bg-[#2f3b53] w-48 h-10 rounded-lg">
+                        <button onClick={()=>onBuyAccessory(currentIndex)} className="bg-[#2f3b53] w-48 h-10 rounded-lg">
                             <span className="text-[#fff] font-semibold">BUY</span>
                         </button>
                     </div>
