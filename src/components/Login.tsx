@@ -16,8 +16,8 @@ const Login = () =>{
 		router.push("/")
 	}
     return(
-        <div className="max-h-[700px] max-w-[380px] align-middle overflow-hidden rounded-lg shadow-lg">
-            <div className="bg-[#e5f2f8] w-[380px] h-[700px]">
+        <div className="max-h-[700px] max-w-[400px] align-middle overflow-hidden rounded-lg shadow-lg">
+            <div className="bg-[#e5f2f8] w-[400px] h-[700px]">
                 <div className="p-3 flex flex-col h-full w-full justify-center items-center">
 					<div>
 						<ConnectButton connectModal={{ size: "wide" }} detailsButton={{

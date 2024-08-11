@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
 
-const ScreenPet = ({petList,changeName,setIndex}:{petList: any,changeName: any,setIndex:any}) =>{
+const ScreenPet = ({petList,changeName,setIndex,dataPet}:{petList: any,changeName: any,setIndex:any, dataPet: any}) =>{
     const [currentIndex, setCurrentIndex] = useState<number>(0);
     const goToPrevious = () =>{
         const isFirstIndex = currentIndex == 0;
         const newIndex = isFirstIndex ? petList.length - 1 : currentIndex - 1;
         setCurrentIndex(newIndex)
         setIndex(newIndex)
-        changeName(petList[newIndex].metadata.name)
+        if(dataPet[0]==""){
+            changeName(petList[newIndex].metadata.name)
+        }else{
+            changeName(dataPet[0])
+        }
         localStorage.setItem("namePet",petList[newIndex].metadata.name)
         localStorage.setItem("indexPet",newIndex.toString())
         localStorage.setItem("seconds",JSON.stringify(petList[newIndex].time_until_starving/10000000))
@@ -17,7 +21,11 @@ const ScreenPet = ({petList,changeName,setIndex}:{petList: any,changeName: any,s
         const newIndex = isLastIndex ? 0: currentIndex + 1;
         setCurrentIndex(newIndex)
         setIndex(newIndex)
-        changeName(petList[newIndex].metadata.name)
+        if(dataPet[0]==""){
+            changeName(petList[newIndex].metadata.name)
+        }else{
+            changeName(dataPet[0])
+        }
         localStorage.setItem("indexPet",newIndex.toString())
         localStorage.setItem("namePet",petList[newIndex].metadata.name)
         localStorage.setItem("seconds",JSON.stringify(petList[newIndex].time_until_starving/10000000))

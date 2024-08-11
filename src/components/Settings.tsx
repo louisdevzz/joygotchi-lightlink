@@ -2,19 +2,69 @@
 import { useEffect, useState } from "react"
 import Link from "next/link";
 import { Near } from "@/utils/near";
-import { usePrivy } from "@privy-io/react-auth";
+import axios from "axios";
+import { useActiveAccount } from "thirdweb/react";
 
 const Settings = () =>{
+    const account = useActiveAccount()
     const [isSound, setIsSound] = useState<boolean>(false);
-    const [account, setAccount] = useState<string|null>(null);
-    const {ready, authenticated, logout} = usePrivy();
-    const disableLogout = !ready || (ready && !authenticated);
+    const [ethBalance, setEthBalance] = useState<string|null>(null)
+    const [raiTokenBalance, setRaiTokenBalance] = useState<string|null>(null)
+
+    useEffect(()=>{
+        if(account){
+            fetchEthBalance()
+            fetchRaiToken()
+        }
+    },[account])
 
     const copyAddress = () => {
         if(account){
-            navigator.clipboard.writeText(account as string)
+            navigator.clipboard.writeText(account?.address as string)
             alert("Copied")
         }
+    }
+
+    const fetchEthBalance = async() =>{
+        const response = await axios.get(`https://pegasus.lightlink.io/api/v2/addresses/${account?.address}`,{
+            headers:{
+                "Content-Type": "application/json"
+            }
+        })
+        const data = response.data;
+        if(data){
+            const balance = data.coin_balance
+            setEthBalance((Number(balance)*Math.pow(10,-18)).toFixed(8))
+        }
+    }
+
+    const fetchRaiToken = async() =>{
+        const response = await axios.get(`https://pegasus.lightlink.io/api/v2/addresses/${account?.address}/tokens?type=ERC-20`,{
+            headers:{
+                "Content-Type": "application/json"
+            }
+        })
+        const data = response.data;
+        if(data){
+            const balance = data.items[0].value
+            setRaiTokenBalance((Number(balance)*Math.pow(10,-18)).toString())
+        }
+    }
+
+    const truncateString = (str: string)=>{
+        const format = str.replace("0x","");
+        if(format.length > 6) return "0x"+format.slice(0,2)+'...'+format.slice(-2);
+        return "0x"+format
+    }
+
+    const parseDot = (str: string) => {
+        var value = str.split('.').join('');
+    
+        if (value.length > 3) {
+            return  value.substring(0, value.length - 3) + '.' + value.substring(value.length - 3, value.length);
+        }
+    
+        return value;
     }
 
     return(
@@ -22,7 +72,7 @@ const Settings = () =>{
             <div className="mt-3 border-2 border-[#304053] h-12 w-full flex flex-row justify-between items-center p-2 rounded-lg">
                 <span className="text-black">Wallet address</span>
                 <div className="flex cursor-pointer flex-row gap-1" onClick={copyAddress}>
-                    <span className="text-black">{account?account:"-"}</span>
+                    <span className="text-black">{account?truncateString(account?.address):"-"}</span>
                     <img width={15} src="/assets/icon/copy.svg" alt="copy" />
                 </div>
             </div>
@@ -40,20 +90,20 @@ const Settings = () =>{
                 <span>Balance</span>
                 <div className="flex mt-3 flex-row justify-between items-center">
                     <div className="flex flex-row gap-1 items-center">
-                        <img width={16} className="mt-1" src="/assets/icon/near-dark.svg" alt="near" />
-                        <span className="text-lg">NEAR</span>
+                        <img width={20} src="/assets/icon/eth.svg" alt="eth" />
+                        <span className="text-lg">ETH</span>
                     </div>
-                    <span>0.001</span>
+                    <span>{ethBalance ? ethBalance : "-"}</span>
                 </div>
                 <div className="flex mt-1 flex-row justify-between items-center">
                     <div className="flex flex-row gap-1 items-center">
-                        <img width={16} className="mt-1" src={Near} alt="near" />
-                        <span className="text-lg">HOT</span>
+                        <img width={20} src="/assets/icon/coin.svg" alt="coin" />
+                        <span className="text-lg">RGT</span>
                     </div>
-                    <span>0.001</span>
+                    <span>{raiTokenBalance ? parseDot(raiTokenBalance) : "-"}</span>
                 </div>
             </div>
-            <button disabled={disableLogout} onClick={logout} className="w-full mt-4 bg-[#304053] hover:bg-opacity-85 rounded-lg h-14">
+            <button className="w-full mt-4 bg-[#304053] hover:bg-opacity-85 rounded-lg h-14">
                 <span className="text-xl">LOG OUT</span>
             </button>
             <div className="flex flex-col mt-5 gap-2">

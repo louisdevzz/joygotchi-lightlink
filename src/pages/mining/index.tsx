@@ -130,7 +130,7 @@ const Mining = () =>{
     
     return(
         <div className="flex flex-row justify-center items-center h-screen">
-            <div className="h-full md:max-h-[700px] w-full md:max-w-[380px] rounded-lg shadow-lg relative">
+            <div className="h-full md:max-h-[700px] w-full md:max-w-[400px] rounded-lg shadow-lg relative">
                 <div className="bg-[#e5f2f8] h-full w-full flex flex-col relative">
                     {status&&(
                         <div className="fixed md:absolute z-50 bg-[#d4edda] w-60 h-10 top-5 left-[52%] rounded-lg border-2 border-[#c3e6cb] shadow-sm transform -translate-x-1/2 transition-all delay-75">
@@ -191,7 +191,7 @@ const Mining = () =>{
                 </div>
                 {
                     isShowModal&&(
-                        <div className="fixed top-0 min-h-screen md:w-[380px] md:h-[700px] screen bg-black bg-opacity-60 z-50 flex justify-center items-center overflow-hidden">
+                        <div className="fixed top-0 min-h-screen md:w-[400px] md:h-[700px] screen bg-black bg-opacity-60 z-50 flex justify-center items-center overflow-hidden">
                             <div className="bg-white h-[80vh] mt-5 w-[95%] rounded-lg flex flex-col p-2 pb-5">
                                 <div className="flex flex-col overflow-y-auto">
                                 <div className="flex justify-between flex-row">

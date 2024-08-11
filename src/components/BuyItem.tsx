@@ -63,7 +63,7 @@ const BuyItem = ({petLists,index,status,error}:{petLists:any,index:number,status
                 <div className="mt-3 bg-[#a9c6e4] w-full max-h-36 rounded-lg px-3 py-4">
                     <div className="flex flex-row justify-between w-full">
                         <p>BUY 1 {listButton[currentIndex].name}</p>
-                        <p>1 JOY</p>
+                        <p>1 RGT</p>
                     </div>
                     {/* <div className="flex flex-row justify-center w-full mt-2">
                         <p className="text-[#00000088]">50 PTS & 12 HOURS TOD</p>
@@ -78,7 +78,7 @@ const BuyItem = ({petLists,index,status,error}:{petLists:any,index:number,status
                 <div className="mt-3 bg-[#a9c6e4] w-full max-h-36 rounded-lg px-3 py-4">
                     <div className="flex flex-row justify-between w-full">
                         <p>BUY 1 {listButton[currentIndex].name}</p>
-                        <p>1 JOY</p>
+                        <p>1 RGT</p>
                     </div>
                     {/* <div className="flex flex-row justify-center w-full mt-2">
                         <p className="text-[#00000088]">50 PTS & 12 HOURS TOD</p>
@@ -93,7 +93,7 @@ const BuyItem = ({petLists,index,status,error}:{petLists:any,index:number,status
                 <div className="mt-3 bg-[#a9c6e4] w-full max-h-36 rounded-lg px-3 py-4">
                     <div className="flex flex-row justify-between w-full">
                         <p>BUY 1 {listButton[currentIndex].name}</p>
-                        <p>1 JOY</p>
+                        <p>1 RGT</p>
                     </div>
                     {/* <div className="flex flex-row justify-center w-full mt-2">
                         <p className="text-[#00000088]">50 PTS & 12 HOURS TOD</p>
@@ -108,7 +108,7 @@ const BuyItem = ({petLists,index,status,error}:{petLists:any,index:number,status
                 <div className="mt-3 bg-[#a9c6e4] w-full max-h-36 rounded-lg px-3 py-4">
                     <div className="flex flex-row justify-between w-full">
                         <p>BUY 1 {listButton[currentIndex].name}</p>
-                        <p>1 JOY</p>
+                        <p>1 RGT</p>
                     </div>
                     {/* <div className="flex flex-row justify-center w-full mt-2">
                         <p className="text-[#00000088]">50 PTS & 12 HOURS TOD</p>

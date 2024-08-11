@@ -25,7 +25,7 @@ const Space = () =>{
     }
     return(
         <div className="h-screen w-full flex flex-row justify-center items-center">
-            <div className="h-full md:max-h-[700px] w-full md:max-w-[380px] rounded-lg shadow-lg relative overflow-hidden">
+            <div className="h-full md:max-h-[700px] w-full md:max-w-[400px] rounded-lg shadow-lg relative overflow-hidden">
                 <div className="bg-[#e5f2f8] flex flex-col h-full w-full overflow-hidden">
                     {status&&(
                         <div className="fixed z-50 bg-[#97b5d5] w-56 h-10 top-5 left-[52%] rounded-lg border-2 border-[#e5f2f8] shadow-sm transform -translate-x-1/2 transition-all delay-75">

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { createThirdwebClient, defineChain, getContract } from "thirdweb";
 import { ConnectButton, lightTheme, useActiveAccount, useIsAutoConnecting } from "thirdweb/react";
+import axios from "axios";
 
 const client = createThirdwebClient({
     clientId: process.env.CLIENT_ID!
@@ -18,12 +19,59 @@ const Header = () =>{
     const [isShow, setIsShow] = useState<boolean>(false);
     const [status, setStatus] = useState<string|null>(null);
     const router = useRouter();
+    const [ethBalance, setEthBalance] = useState<string|null>(null)
+    const [raiTokenBalance, setRaiTokenBalance] = useState<string|null>(null)
+
+    useEffect(()=>{
+        if(account){
+            fetchEthBalance()
+            fetchRaiToken()
+        }
+    },[account])
+
+    const fetchEthBalance = async() =>{
+        const response = await axios.get(`https://pegasus.lightlink.io/api/v2/addresses/${account?.address}`,{
+            headers:{
+                "Content-Type": "application/json"
+            }
+        })
+        const data = response.data;
+        if(data){
+            const balance = data.coin_balance
+            setEthBalance((Number(balance)*Math.pow(10,-18)).toFixed(6))
+        }
+    }
+
+    const fetchRaiToken = async() =>{
+        const response = await axios.get(`https://pegasus.lightlink.io/api/v2/addresses/${account?.address}/tokens?type=ERC-20`,{
+            headers:{
+                "Content-Type": "application/json"
+            }
+        })
+        const data = response.data;
+        if(data){
+            const balance = data.items[0].value
+            setRaiTokenBalance((Number(balance)*Math.pow(10,-18)).toString())
+        }
+    }
+
 
     const truncateString = (str: string)=>{
         const format = str.replace("0x","");
         if(format.length > 6) return "0x"+format.slice(0,2)+'...'+format.slice(-2);
         return "0x"+format
     }
+
+    const parseDot = (str: string) => {
+        var value = str.split('.').join('');
+    
+        if (value.length > 3) {
+            return  value.substring(0, value.length - 3) + '.' + value.substring(value.length - 3, value.length);
+        }
+    
+        return value;
+    }
+
     return(
         <div className="sticky w-full fix-header top-0 z-10 md:rounded-t-lg">
             {status&&(
@@ -37,13 +85,13 @@ const Header = () =>{
             <div className="border-b border-gray-300 h-16 w-full bg-[#2d3c53] relative">
                 <div className="flex flex-row justify-between items-center px-2 py-2 pt-3">
                     <div className="flex flex-row items-center gap-5">
-                        <div className="flex flex-row gap-2">
-                            <img width={25} height={25} src="/assets/item/coin.png" alt="coin" />
-                            <p className="text-[#fff]">0.01</p>
+                        <div className="flex flex-row gap-1">
+                            <img width={25} height={25} src="/assets/icon/eth_light.svg" alt="coin" />
+                            <p className="text-[#fff]">{ethBalance ? ethBalance : "-"}</p>
                         </div>
-                        <div className="flex flex-row gap-2">
-                            <img width={25} height={25} src="/assets/item/credit_card.png" alt="coin" />
-                            <p className="text-[#fff]">19000</p>
+                        <div className="flex flex-row gap-1">
+                            <img width={25} height={25} src="/assets/icon/coin_light.svg" alt="coin" />
+                            <p className="text-[#fff]">{raiTokenBalance ?  parseDot(raiTokenBalance) : "-"}</p>
                         </div>
                     </div>
                     
