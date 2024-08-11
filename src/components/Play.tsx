@@ -200,8 +200,8 @@ const Play = () => {
     //console.log("raitoken",raiTokenBalance)
     //console.log("namepet",namePet)
     return(
-        <div className="h-full md:max-h-[700px] w-full md:max-w-[400px] rounded-lg shadow-lg relative overflow-hidden">
-            <div className="bg-[#e5f2f8] flex flex-col h-full w-full overflow-hidden">
+        <div className="h-full md:max-h-[700px] w-full md:max-w-[400px] rounded-lg shadow-lg relative">
+            <div className="bg-[#e5f2f8] flex flex-col h-full w-full relative">
                 {status&&(
                     <div className="fixed md:absolute z-50 bg-[#d4edda] w-80 h-10 top-5 left-[52%] rounded-lg border-2 border-[#c3e6cb] shadow-sm transform -translate-x-1/2 transition-all delay-75">
                         <div className="flex flex-row w-full px-3 items-center h-full gap-2">
@@ -327,7 +327,6 @@ const Play = () => {
                 </div>
                 <Footer/>
             </div>
-            
         </div>
     )
 }
