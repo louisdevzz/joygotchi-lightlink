@@ -58,7 +58,7 @@ const BuyItem = ({petList,index,status,loading,error, refetch, optionFetchs}:{pe
         method: "allowance",
         params: [account?.address as string,immidiateUseItemsContract],
     });
-    //console.log("allowance",allowance)
+    //console.log("allowanceapprove",allowance)
 
     useEffect(()=>{
         if(Number(localStorage.getItem("allowanceApprove")) == 0 || allowance == BigInt(0)){

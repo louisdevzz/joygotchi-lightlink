@@ -18,7 +18,8 @@
     "react": "^18",
     "react-dom": "^18",
     "thirdweb": "^5.44.1",
-    "wagmi": "^2.10.11"
+    "wagmi": "^2.10.11",
+    "web3-eth-abi": "^4.2.3"
   },
   "devDependencies": {
     "@types/node": "^20",

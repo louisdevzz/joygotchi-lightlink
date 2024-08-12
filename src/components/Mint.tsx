@@ -15,7 +15,7 @@ const Mint = () =>{
     const [namePet, setNamePet] = useState<string|null>("GREEN DRAGON")
     const [ATK, setATK] = useState<string|null>("100")
     const [DEF, setDEF] = useState<string|null>("100")
-    const [image, setImage] = useState<string|null>("/assets/animation/blackdragon/1.gif")
+    const [image, setImage] = useState<string|null>("https://bafkreigw3j7bn3yhkbqt2ercytjhghzn462n5pxzyig4lptuyv4zv6gn6y.ipfs.nftstorage.link")
     const [status, setStatus] = useState<string|null>(null);
     const [error, setError] = useState<string|null>(null);
     const [loading, setLoading] = useState<boolean>(false);
@@ -32,6 +32,16 @@ const Mint = () =>{
         rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
     }
 
+    const contract = getContract({
+        client,
+        address: contractAddress,
+        chain: {
+            id:1891,
+            rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
+        },
+        abi: petAddress
+    });
+
     useEffect(()=>{
         if(isSuccess){
             setLoading(false)
@@ -43,6 +53,7 @@ const Mint = () =>{
         if(isError){
             setLoading(false)
             setError("Mint failed!")
+            console.log(errorTrx)
             setTimeout(() => {
                 setError(null)
             }, 1200); 
@@ -66,12 +77,21 @@ const Mint = () =>{
         params: [account?.address as string,contractAddress],
     });
     //console.log("allowance",allowance)
+    const transactionAllowance = prepareContractCall({
+        contract: contractToken,
+        method: "approve",
+        params: [contractAddress, MAX_ALLOWANCE]
+    });
+    useEffect(()=>{
+        if((Number(allowance?.toString()) == 0)){
+            sendTransaction(transactionAllowance as any)
+        }
+    },[allowance])
 
     if(isErrorAllownce){
         console.log("isErrorAllownce",errorAllowance)
     }
 
-   
     //{ chain, address, client, tokenAddress }
     const { data: tokenBlanceData, isError: isTokenBlanceError,error:tokenBlanceError } = useWalletBalance({
         chain,
@@ -79,7 +99,7 @@ const Mint = () =>{
         client,
         tokenAddress: tokenAdrees,
     });
-    const { data: ethBlanceData, isError: isEthBlanceError,error: ethBlanceError } = useWalletBalance({
+    const { data: ethBlanceData} = useWalletBalance({
         chain,
         address: account?.address,
         client,
@@ -90,7 +110,7 @@ const Mint = () =>{
         setNamePet("BLACK DRAGON")
         setATK("100")
         setDEF("100")
-        setImage("/assets/animation/blackdragon/1.gif")
+        setImage("https://bafkreigw3j7bn3yhkbqt2ercytjhghzn462n5pxzyig4lptuyv4zv6gn6y.ipfs.nftstorage.link")
         setCurrentIndex(0)
     }
 
@@ -98,51 +118,38 @@ const Mint = () =>{
         setNamePet("GREEN DRAGON")
         setATK("100")
         setDEF("100")
-        setImage("/assets/animation/greendragon/1.gif")
+        setImage("https://bafkreid32fvsd54vejrhsp26zebufsdqnx7jjgtg7j5odp6vyc3b4joecm.ipfs.nftstorage.link")
         setCurrentIndex(1)
     }
     
     const onMint = async() =>{
-        const contract = getContract({
-            client,
-            address: contractAddress,
-            chain: {
-                id:1891,
-                rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
-            },
-            abi: petAddress
-        });
-        if(allowance&&(Number(allowance.toString()) == 0)){
-            const transactionAllowance = prepareContractCall({
-                contract: contractToken,
-                method: "approve",
-                params: [contractAddress, MAX_ALLOWANCE]
-            });
-            sendTransaction(transactionAllowance as any)
-            if(isSuccessTx){    
+        if(Number(ethBlanceData?.value.toString()) > 0){
+            if(Number(tokenBlanceData?.value.toString()) > 0){
                 const transaction = prepareContractCall({
                     contract,
                     method: "mint",
                     params: []
                 });
                 sendTx(transaction as any);  
-            } 
+            }else{
+                setError("Please faucet before mint!")
+                setTimeout(() => {
+                    setError(null)
+                }, 1200);
+            }
+            
         }else{
-            const transaction = prepareContractCall({
-                contract,
-                method: "mint",
-                params: []
-            });
-            sendTx(transaction as any);  
+            setError("Please deposit eth in wallet!")
+            setTimeout(() => {
+                setError(null)
+            }, 1200);
         }
-        
-        
     }
     //console.log('allowance',allowance)
     return(
         <>
             {status&&(
-                <div className="fixed md:absolute z-50 bg-[#d4edda] w-60 h-10 top-5 left-[52%] rounded-lg border-2 border-[#c3e6cb] shadow-sm transform -translate-x-1/2 transition-all delay-75">
+                <div className="fixed md:absolute z-50 bg-[#d4edda] w-80 h-10 top-1 left-[52%] rounded-lg border-2 border-[#c3e6cb] shadow-sm transform -translate-x-1/2 transition-all delay-75">
                     <div className="flex flex-row w-full px-3 items-center h-full gap-2">
                         <img width={22} src="/assets/icon/success.svg" alt="success" />
                         <small className="text-[#155724] text-sm font-semibold">{status}</small>
@@ -150,7 +157,7 @@ const Mint = () =>{
                 </div>
             )}
             {loading&&(
-                <div className="fixed md:absolute z-50 bg-[#fef3c7] w-60 h-10 top-5 left-[52%] rounded-lg border-2 border-[#fabe25] shadow-sm transform -translate-x-1/2 transition-all delay-75">
+                <div className="fixed md:absolute z-50 bg-[#fef3c7] w-80 h-10 top-1 left-[52%] rounded-lg border-2 border-[#fabe25] shadow-sm transform -translate-x-1/2 transition-all delay-75">
                     <div className="flex flex-row w-full px-3 items-center h-full gap-2">
                         <img width={22} src="/assets/icon/reload.svg" alt="reload" />
                         <small className="text-[#f49d0c] text-sm font-semibold">Loading....</small>
@@ -158,7 +165,7 @@ const Mint = () =>{
                 </div>
             )}
             {error&&(
-                <div className="fixed md:absolute z-50 bg-[#f8d7da] w-60 h-10 top-5 left-[52%] rounded-lg border-2 border-[#FF0000] shadow-sm transform -translate-x-1/2 transition-all delay-75">
+                <div className="fixed md:absolute z-50 bg-[#f8d7da] w-80 h-10 top-1 left-[52%] rounded-lg border-2 border-[#FF0000] shadow-sm transform -translate-x-1/2 transition-all delay-75">
                     <div className="flex flex-row w-full px-3 items-center h-full gap-2">
                         <img width={22} src="/assets/icon/error.svg" alt="error" />
                         <small className="text-[#FF0000] text-sm font-semibold">{error}</small>
@@ -197,13 +204,13 @@ const Mint = () =>{
             </div>
             <div className="flex flex-row justify-start gap-5 items-center mt-2">
                 <div onClick={onMintBlackDragon} className={`h-28 cursor-pointer w-28 border-2 rounded-lg mt-2 border-[#304053] ${currentIndex==0?"border-opacity-100":"border-opacity-35"} relative`}>
-                    <img width={24} className="h-20 w-20 ml-3 rounded-lg" src="/assets/animation/blackdragon/1.gif" alt="pet" />
+                    <img width={24} className="h-20 w-20 ml-3 rounded-lg" src="https://bafkreigw3j7bn3yhkbqt2ercytjhghzn462n5pxzyig4lptuyv4zv6gn6y.ipfs.nftstorage.link" alt="pet" />
                     <small className="text-black absolute ml-1 w-full bottom-1 text-[0.7rem]">
                         BLACK DRAGON
                     </small>
                 </div>
                 <div onClick={onMintGreenDragon} className={`h-28 cursor-pointer w-28 border-2 rounded-lg mt-2 border-[#304053] ${currentIndex==1?"border-opacity-100":"border-opacity-35"} relative`}>
-                    <img width={24} className="h-20 w-20 ml-5 rounded-lg" src="/assets/animation/greendragon/1.gif" alt="pet" />
+                    <img width={24} className="h-20 w-20 ml-5 rounded-lg" src="https://bafkreid32fvsd54vejrhsp26zebufsdqnx7jjgtg7j5odp6vyc3b4joecm.ipfs.nftstorage.link" alt="pet" />
                     <small className="text-black absolute ml-1 w-full bottom-1 text-[0.7rem]">
                         GREEN DRAGON
                     </small>

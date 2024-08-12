@@ -5,7 +5,7 @@ import CountDownTimer from './CountDownTimer';
 import BuyItem from './BuyItem';
 import ScreenPet from './ScreenPet';
 import { useRouter } from 'next/router';
-import { ConnectButton, lightTheme, useActiveAccount, useReadContract, useSendTransaction } from 'thirdweb/react';
+import { ConnectButton, useActiveAccount, useReadContract, useSendTransaction } from 'thirdweb/react';
 
 const client = createThirdwebClient({
     clientId: process.env.CLIENT_ID!
@@ -14,6 +14,8 @@ import { inAppWallet } from "thirdweb/wallets";
 import { createThirdwebClient, getContract, prepareContractCall } from 'thirdweb';
 import axios from 'axios';
 import { petAddress } from '@/utils/abi';
+import Mint from './Mint';
+import Header from './Header';
 
 
 const Play = () => {
@@ -27,9 +29,7 @@ const Play = () => {
     const [namePet,setNamePet] = useState<string|null>(null);
     const [petList, setPetList] = useState<any|null>([]);
     const [index, setIndex] = useState<number>(0);
-    const [indexItem, setIndexItem] = useState<number>(0);
     const [status, setStatus] = useState<string|null>(null);
-    const seconds = 0;
     const [error, setError] = useState<string|null>(null)
     const router = useRouter();
     const contractAddress = "0x5D31C0fF4AAF1C906B86e65fDd3A17c7087ab1E3"
@@ -63,7 +63,7 @@ const Play = () => {
                 setStatus(null)
             }, 1200); 
         }
-        if(isError){
+        if(isErrorNamePet){
             setLoading(false)
             setError("Change pet name failed!")
             setTimeout(() => {
@@ -97,40 +97,61 @@ const Play = () => {
     },[account])
 
     const fetchEthBalance = async() =>{
-        const response = await axios.get(`https://pegasus.lightlink.io/api/v2/addresses/${account?.address}`,{
-            headers:{
-                "Content-Type": "application/json"
+        try{
+            const response = await axios.get(`https://pegasus.lightlink.io/api/v2/addresses/${account?.address}`,{
+                headers:{
+                    "Content-Type": "application/json"
+                }
+            })
+            if(response.status == 404){
+                return ;
             }
-        })
-        const data = response.data;
-        if(data){
-            const balance = data.coin_balance
-            setEthBalance((Number(balance)*Math.pow(10,-18)).toFixed(6))
+            const data = response.data;
+            if(data){
+                const balance = data.coin_balance
+                setEthBalance((Number(balance)*Math.pow(10,-18)).toFixed(6))
+            }
+        }catch(error){
+            console.log("Not Eth Balance")
         }
     }
 
     const fetchRaiToken = async() =>{
-        const response = await axios.get(`https://pegasus.lightlink.io/api/v2/addresses/${account?.address}/tokens?type=ERC-20`,{
-            headers:{
-                "Content-Type": "application/json"
+        try{
+            const response = await axios.get(`https://pegasus.lightlink.io/api/v2/addresses/${account?.address}/tokens?type=ERC-20`,{
+                headers:{
+                    "Content-Type": "application/json"
+                }
+            })
+            if(response.status == 404){
+                return ;
             }
-        })
-        const data = response.data;
-        if(data){
-            const balance = data.items[0].value
-            setRaiTokenBalance((Number(balance)*Math.pow(10,-18)).toFixed(0))
+            const data = response.data;
+            if(data){
+                const balance = data.items[0].value
+                setRaiTokenBalance((Number(balance)*Math.pow(10,-18)).toFixed(0))
+            }
+        }catch(error){
+            console.log("Not rai token in balance")
         }
     }
 
     const loadNFT = async() =>{
-        const response = await axios.get(`https://pegasus.lightlink.io/api/v2/addresses/${account?.address}/nft?type=ERC-721`,{
-            headers:{
-                "Content-Type":"application/json"
+        try{
+            const response = await axios.get(`https://pegasus.lightlink.io/api/v2/addresses/${account?.address}/nft?type=ERC-721`,{
+                headers:{
+                    "Content-Type":"application/json"
+                }
+            })
+            if(response.status == 404){
+                return ;
             }
-        })
-        const data = response.data;
-        if(data){
-            setPetList(data.items)
+            const data = response.data;
+            if(data){
+                setPetList(data.items)
+            }
+        }catch(error){
+            console.log("not pet in wallet")
         }
     }
     
@@ -225,106 +246,124 @@ const Play = () => {
                         </div>
                     </div>
                 )}
-                <div className="w-full sticky top-0 z-20">
-                        {
-                            isShow&&(
-                                <div className="fixed h-screen w-full md:max-h-[700px] md:max-w-[400px] bg-black bg-opacity-45 z-40 overflow-hidden overscroll-none">
-                                    <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[#e5f2f8] pb-5 w-[375px] rounded-lg">
-                                        <div className="flex flex-row justify-between items-center w-full bg-[#2d3c53] h-12 rounded-t-lg px-3">
-                                            <span className='text-white'>Change Name Pet</span>
-                                            <button onClick={()=>setIsShow(false)}>
-                                                <img width={35} src="/assets/icon/close.svg" alt="close" />
-                                            </button>
+                {
+                    petList.length == 0&&(
+                        <Header/>
+                    )
+                }
+                {
+                    petList.length > 0 &&(
+                        <div className="w-full sticky top-0 z-20">
+                                {
+                                    isShow&&(
+                                        <div className="fixed h-screen w-full md:max-h-[700px] md:max-w-[400px] bg-black bg-opacity-45 z-40 overflow-hidden overscroll-none">
+                                            <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[#e5f2f8] pb-5 w-[375px] rounded-lg">
+                                                <div className="flex flex-row justify-between items-center w-full bg-[#2d3c53] h-12 rounded-t-lg px-3">
+                                                    <span className='text-white'>Change Name Pet</span>
+                                                    <button onClick={()=>setIsShow(false)}>
+                                                        <img width={35} src="/assets/icon/close.svg" alt="close" />
+                                                    </button>
+                                                </div>
+                                                <div className="px-3 mt-5 flex flex-col gap-1 text-black">
+                                                    <label htmlFor="name">Name Pet</label>
+                                                    <input onChange={(e)=>setNamePet(e.target.value)} type="text" placeholder="Enter new name" className="px-3 py-2 border-2 outline-none rounded-lg border-gray-300 focus:border-[#2d3c53] hover:border-[#2d3c53]" />
+                                                </div>
+                                                <div className="flex justify-end px-3 mt-7">
+                                                    <button onClick={onChangeName} className="px3 py-2 w-32 rounded-lg h-12 bg-[#2d3c53] hover:bg-opacity-90">
+                                                        <span className='text-white'>Change</span>
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="px-3 mt-5 flex flex-col gap-1 text-black">
-                                            <label htmlFor="name">Name Pet</label>
-                                            <input onChange={(e)=>setNamePet(e.target.value)} type="text" placeholder="Enter new name" className="px-3 py-2 border-2 outline-none rounded-lg border-gray-300 focus:border-[#2d3c53] hover:border-[#2d3c53]" />
+                                    )
+                                }
+                                <div className="border-b border-gray-300 h-20 w-full bg-[#2d3c53] relative">
+                                    <div className="flex flex-row justify-between px-2 py-2">
+                                        <div className="flex flex-col gap-1">
+                                            <div className="flex flex-row gap-1">
+                                                <img width={25} src="/assets/icon/eth_light.svg" alt="coin" />
+                                                <p className="text-[#fff]">{ethBalance ? ethBalance : "0"}</p>
+                                            </div>
+                                            <div className="flex flex-row gap-1">
+                                                <img width={25} src="/assets/icon/coin_light.svg" alt="coin" />
+                                                <p className="text-[#fff]">{raiTokenBalance ? parseDot(raiTokenBalance) :"0"}</p>
+                                            </div>
                                         </div>
-                                        <div className="flex justify-end px-3 mt-7">
-                                            <button onClick={onChangeName} className="px3 py-2 w-32 rounded-lg h-12 bg-[#2d3c53] hover:bg-opacity-90">
-                                                <span className='text-white'>Change</span>
-                                            </button>
+                                        <div onClick={()=>setIsShow(true)} className="flex flex-row gap-1 items-center -mt-1 ml-2">
+                                            <p className="text-[#fff]">{truncateNamePet(namePet as string)}</p>
+                                            <img width={14} src="/assets/icon/pen.svg" alt="pen" />
+                                        </div>
+                                        <div className="flex flex-row  mt-1 items-center">
+                                            <ConnectButton connectModal={{ size: "wide" }} detailsButton={{
+                                                render:()=>{
+                                                    return(
+                                                        <div className="px-2 cursor-pointer py-0.5 h-8 rounded-full bg-[#a9c6e4]">
+                                                            {truncateString(account?.address as string)}
+                                                        </div>
+                                                    )
+                                                }
+                                            }} theme={"dark"} signInButton={{
+                                                label: "Connect Wallet"
+                                            }} autoConnect client={client} wallets={wallets} />
                                         </div>
                                     </div>
+                                    <div className="px-3 py-2 w-[150px] rounded-full text-center absolute top-2/3 left-1/3  h-10 bg-[#f48f59]">
+                                        {/* <span>0h:57m:35s</span> */}
+                                        <CountDownTimer seconds={dataPet ? Number(dataPet[4]) : 0}/>
+                                    </div>
+                                </div>
+                        </div>
+                    )
+                }
+                <div className="h-full overflow-y-auto w-full scrollbar">
+                    <div className="p-3 h-full flex flex-col relative w-full">
+                        {
+                            petList.length > 0 &&(
+                                <div className="flex flex-col">
+                                    <div className="mt-2 h-full">
+                                        <div className="w-full h-[250px] rounded-md flex justify-center flex-row relative">
+                                            <img width={60} className="w-full h-full rounded-md" src="/assets/background/screen_pet.png" alt="screen" />
+                                            <div className="flex flex-row justify-between">
+                                                {/* <img width={10} height={10} className="w-6 h-6 absolute top-1/2 left-[70px] " src="/assets/icon/arrow_left.png" alt="arrow" /> */}
+                                                {/* <img width={150} className="absolute top-1/2 left-[53%] transform -translate-x-1/2 -translate-y-1/2" src="/assets/pet/pet.png" alt="pet" /> */}
+                                                <div className="absolute top-[40%] left-[50%] transform -translate-x-1/2 -translate-y-1/2">
+                                                    <ScreenPet dataPet={dataPet} petList={petList} changeName={setNamePet} setIndex={setIndex}/>
+                                                </div>
+                                                {/* <img width={10} height={10} className="w-6 h-6 absolute top-1/2 right-[60px] " src="/assets/icon/arrow_right.png" alt="arrow" /> */}
+                                            </div>
+                                            {/* <p className="text-[#fff] font-semibold absolute top-3/4 mt-3 left-1/2 transform -translate-x-1/2 ">Pet Name</p> */}
+                                        </div>
+                                    </div>
+                                    <div className="mt-2 bg-[#a9c6e4] w-full flex-row flex justify-between rounded-lg px-3 py-4">
+                                        <div className="flex flex-col text-center">
+                                            <p className="text-xl">{dataPet ? dataPet[6].toString():"-"} ETH</p>
+                                            <span className="text-[#00000088]">REWARDS</span>
+                                        </div>
+                                        <div className="flex flex-col text-center">
+                                            <p className="text-xl">{dataPet ? dataPet[3].toString():"-"}</p>
+                                            <span className="text-[#00000088]">LEVEL</span>
+                                        </div>
+                                        <div className="flex flex-col text-center">
+                                            <p className="text-xl">{dataPet ? dataPet[1].toString():"-"}</p>
+                                            <span className="text-[#00000088]">STATUS</span>
+                                        </div>
+                                        <div className="flex flex-col text-center">
+                                            <p className="text-xl">{dataPet ? nFormatter(Number(dataPet[2].toString()),1):"-"}</p>
+                                            <span className="text-[#00000088]">SCORE</span>
+                                        </div>
+                                    </div>
+                                    <BuyItem petList={petList} index={index} loading={setLoading} status={setStatus} error={setError} refetch={refetch} optionFetchs={{
+                                        fetchEthBalance,
+                                        fetchRaiToken
+                                    }}/>
                                 </div>
                             )
                         }
-                        <div className="border-b border-gray-300 h-20 w-full bg-[#2d3c53] relative">
-                            <div className="flex flex-row justify-between px-2 py-2">
-                                <div className="flex flex-col gap-1">
-                                    <div className="flex flex-row gap-1">
-                                        <img width={25} src="/assets/icon/eth_light.svg" alt="coin" />
-                                        <p className="text-[#fff]">{ethBalance ? ethBalance : "-"}</p>
-                                    </div>
-                                    <div className="flex flex-row gap-1">
-                                        <img width={25} src="/assets/icon/coin_light.svg" alt="coin" />
-                                        <p className="text-[#fff]">{raiTokenBalance ? parseDot(raiTokenBalance) :"-"}</p>
-                                    </div>
-                                </div>
-                                <div onClick={()=>setIsShow(true)} className="flex flex-row gap-1 items-center -mt-1 ml-2">
-                                    <p className="text-[#fff]">{truncateNamePet(namePet as string)}</p>
-                                    <img width={14} src="/assets/icon/pen.svg" alt="pen" />
-                                </div>
-                                <div className="flex flex-row  mt-1 items-center">
-                                    <ConnectButton connectModal={{ size: "wide" }} detailsButton={{
-                                        render:()=>{
-                                            return(
-                                                <div className="px-2 cursor-pointer py-0.5 h-8 rounded-full bg-[#a9c6e4]">
-                                                    {truncateString(account?.address as string)}
-                                                </div>
-                                            )
-                                        }
-                                    }} theme={"dark"} signInButton={{
-                                        label: "Connect Wallet"
-                                    }} autoConnect client={client} wallets={wallets} />
-                                </div>
-                            </div>
-                            <div className="px-3 py-2 w-[150px] rounded-full text-center absolute top-2/3 left-1/3  h-10 bg-[#f48f59]">
-                                {/* <span>0h:57m:35s</span> */}
-                                <CountDownTimer seconds={dataPet ? Number(dataPet[4]) : 0}/>
-                            </div>
-                        </div>
-                </div>
-                <div className="h-full overflow-y-auto w-full scrollbar">
-                    <div className="p-3 h-full flex flex-col relative w-full">
-                        <div className="flex flex-col">
-                            <div className="mt-2 h-full">
-                                <div className="w-full h-[250px] rounded-md flex justify-center flex-row relative">
-                                    <img width={60} className="w-full h-full rounded-md" src="/assets/background/screen_pet.png" alt="screen" />
-                                    <div className="flex flex-row justify-between">
-                                        {/* <img width={10} height={10} className="w-6 h-6 absolute top-1/2 left-[70px] " src="/assets/icon/arrow_left.png" alt="arrow" /> */}
-                                        {/* <img width={150} className="absolute top-1/2 left-[53%] transform -translate-x-1/2 -translate-y-1/2" src="/assets/pet/pet.png" alt="pet" /> */}
-                                        <div className="absolute top-[40%] left-[50%] transform -translate-x-1/2 -translate-y-1/2">
-                                            <ScreenPet dataPet={dataPet} petList={petList} changeName={setNamePet} setIndex={setIndex}/>
-                                        </div>
-                                        {/* <img width={10} height={10} className="w-6 h-6 absolute top-1/2 right-[60px] " src="/assets/icon/arrow_right.png" alt="arrow" /> */}
-                                    </div>
-                                    {/* <p className="text-[#fff] font-semibold absolute top-3/4 mt-3 left-1/2 transform -translate-x-1/2 ">Pet Name</p> */}
-                                </div>
-                            </div>
-                            <div className="mt-2 bg-[#a9c6e4] w-full flex-row flex justify-between rounded-lg px-3 py-4">
-                                <div className="flex flex-col text-center">
-                                    <p className="text-xl">{dataPet ? dataPet[6].toString():"-"} ETH</p>
-                                    <span className="text-[#00000088]">REWARDS</span>
-                                </div>
-                                <div className="flex flex-col text-center">
-                                    <p className="text-xl">{dataPet ? dataPet[3].toString():"-"}</p>
-                                    <span className="text-[#00000088]">LEVEL</span>
-                                </div>
-                                <div className="flex flex-col text-center">
-                                    <p className="text-xl">{dataPet ? dataPet[1].toString():"-"}</p>
-                                    <span className="text-[#00000088]">STATUS</span>
-                                </div>
-                                <div className="flex flex-col text-center">
-                                    <p className="text-xl">{dataPet ? nFormatter(Number(dataPet[2].toString()),1):"-"}</p>
-                                    <span className="text-[#00000088]">SCORE</span>
-                                </div>
-                            </div>
-                            <BuyItem petList={petList} index={index} loading={setLoading} status={setStatus} error={setError} refetch={refetch} optionFetchs={{
-                                fetchEthBalance,
-                                fetchRaiToken
-                            }}/>
-                        </div>
+                        {
+                            petList.length == 0&&(
+                                <Mint/>
+                            )
+                        }
                     </div>
                 </div>
                 <Footer/>

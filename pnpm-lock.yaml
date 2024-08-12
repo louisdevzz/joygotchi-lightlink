@@ -38,6 +38,9 @@ importers:
       wagmi:
         specifier: ^2.10.11
         version: 2.12.5(@tanstack/query-core@5.51.21)(@tanstack/react-query@5.51.23(react@18.3.1))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(react@18.3.1)(typescript@5.5.4)(utf-8-validate@5.0.10)(viem@2.19.3(bufferutil@4.0.8)(typescript@5.5.4)(utf-8-validate@5.0.10)(zod@3.23.8))(zod@3.23.8)
+      web3-eth-abi:
+        specifier: ^4.2.3
+        version: 4.2.3(typescript@5.5.4)(zod@3.23.8)
     devDependencies:
       '@types/node':
         specifier: ^20
@@ -2057,6 +2060,15 @@ packages:
 
   '@walletconnect/window-metadata@1.0.1':
     resolution: {integrity: sha512-9koTqyGrM2cqFRW517BPY/iEtUDx2r1+Pwwu5m7sJ7ka79wi3EyqhqcICk/yDmv6jAS1rjKgTKXlEhanYjijcA==}
+
+  abitype@0.7.1:
+    resolution: {integrity: sha512-VBkRHTDZf9Myaek/dO3yMmOzB/y2s3Zo6nVU7yaw1G+TvCHAjwaJzNGN9yo4K5D8bU/VZXKP1EJpRhFr862PlQ==}
+    peerDependencies:
+      typescript: '>=4.9.4'
+      zod: ^3 >=3.19.1
+    peerDependenciesMeta:
+      zod:
+        optional: true
 
   abitype@1.0.5:
     resolution: {integrity: sha512-YzDhti7cjlfaBhHutMaboYB21Ha3rXR9QTkNJFzYC4kC8YclaiwPBBBJY8ejFdu2wnJeZCVZSMlQJ7fi8S6hsw==}
@@ -5097,6 +5109,14 @@ packages:
     resolution: {integrity: sha512-B6elffYm81MYZDTrat7aEhnhdtVE3lDBUZft16Z8awYMZYJDbnykEbJVS+l3mnA7AQTnSDr/1MjWofGDLBJPww==}
     engines: {node: '>=8.0.0'}
 
+  web3-errors@1.2.1:
+    resolution: {integrity: sha512-dIsi8SFC9TCAWpPmacXeVMk/F8tDNa1Bvg8/Cc2cvJo8LRSWd099szEyb+/SiMYcLlEbwftiT9Rpukz7ql4hBg==}
+    engines: {node: '>=14', npm: '>=6.12.0'}
+
+  web3-eth-abi@4.2.3:
+    resolution: {integrity: sha512-rPVwTn0O1CzbtfXwEfIjUP0W5Y7u1OFjugwKpSqJzPQE6+REBg6OELjomTGZBu+GThxHnv0rp15SOxvqp+tyXA==}
+    engines: {node: '>=14', npm: '>=6.12.0'}
+
   web3-eth-iban@1.10.3:
     resolution: {integrity: sha512-ZCfOjYKAjaX2TGI8uif5ah+J3BYFuo+47JOIV1RIz2l7kD9VfnxvRH5UiQDRyMALQC7KFd2hUqIEtHklapNyKA==}
     engines: {node: '>=8.0.0'}
@@ -5117,6 +5137,10 @@ packages:
     resolution: {integrity: sha512-j3FBMifyuFFmUIPVQR4pj+t5ILhAexAui0opgcpu9R5LxQrLRUZxHSnU+YO25UycSOa/NAX8A+qkqZNpcFAlxA==}
     engines: {node: '>=8.0.0'}
 
+  web3-types@1.7.0:
+    resolution: {integrity: sha512-nhXxDJ7a5FesRw9UG5SZdP/C/3Q2EzHGnB39hkAV+YGXDMgwxBXFWebQLfEzZzuArfHnvC0sQqkIHNwSKcVjdA==}
+    engines: {node: '>=14', npm: '>=6.12.0'}
+
   web3-utils@1.10.3:
     resolution: {integrity: sha512-OqcUrEE16fDBbGoQtZXWdavsPzbGIDc5v3VrRTZ0XrIpefC/viZ1ZU9bGEemazyS0catk/3rkOOxpzTfY+XsyQ==}
     engines: {node: '>=8.0.0'}
@@ -5124,6 +5148,14 @@ packages:
   web3-utils@1.10.4:
     resolution: {integrity: sha512-tsu8FiKJLk2PzhDl9fXbGUWTkkVXYhtTA+SmEFkKft+9BgwLxfCRpU96sWv7ICC8zixBNd3JURVoiR3dUXgP8A==}
     engines: {node: '>=8.0.0'}
+
+  web3-utils@4.3.1:
+    resolution: {integrity: sha512-kGwOk8FxOLJ9DQC68yqNQc7AzN+k9YDLaW+ZjlAXs3qORhf8zXk5SxWAAGLbLykMs3vTeB0FTb1Exut4JEYfFA==}
+    engines: {node: '>=14', npm: '>=6.12.0'}
+
+  web3-validator@2.0.6:
+    resolution: {integrity: sha512-qn9id0/l1bWmvH4XfnG/JtGKKwut2Vokl6YXP5Kfg424npysmtRLe9DgiNBM9Op7QL/aSiaA0TVXibuIuWcizg==}
+    engines: {node: '>=14', npm: '>=6.12.0'}
 
   webauthn-p256@0.0.5:
     resolution: {integrity: sha512-drMGNWKdaixZNobeORVIqq7k5DsRC9FnG201K2QjeOoQLmtSDaSsVZdkg6n5jUALJKcAG++zBPJXmv6hy0nWFg==}
@@ -8546,6 +8578,12 @@ snapshots:
       '@walletconnect/window-getters': 1.0.1
       tslib: 1.14.1
 
+  abitype@0.7.1(typescript@5.5.4)(zod@3.23.8):
+    dependencies:
+      typescript: 5.5.4
+    optionalDependencies:
+      zod: 3.23.8
+
   abitype@1.0.5(typescript@5.5.4)(zod@3.23.8):
     optionalDependencies:
       typescript: 5.5.4
@@ -11907,6 +11945,21 @@ snapshots:
       - encoding
       - supports-color
 
+  web3-errors@1.2.1:
+    dependencies:
+      web3-types: 1.7.0
+
+  web3-eth-abi@4.2.3(typescript@5.5.4)(zod@3.23.8):
+    dependencies:
+      abitype: 0.7.1(typescript@5.5.4)(zod@3.23.8)
+      web3-errors: 1.2.1
+      web3-types: 1.7.0
+      web3-utils: 4.3.1
+      web3-validator: 2.0.6
+    transitivePeerDependencies:
+      - typescript
+      - zod
+
   web3-eth-iban@1.10.3:
     dependencies:
       bn.js: 5.2.1
@@ -11939,6 +11992,8 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  web3-types@1.7.0: {}
+
   web3-utils@1.10.3:
     dependencies:
       '@ethereumjs/util': 8.1.0
@@ -11960,6 +12015,22 @@ snapshots:
       number-to-bn: 1.7.0
       randombytes: 2.1.0
       utf8: 3.0.0
+
+  web3-utils@4.3.1:
+    dependencies:
+      ethereum-cryptography: 2.2.1
+      eventemitter3: 5.0.1
+      web3-errors: 1.2.1
+      web3-types: 1.7.0
+      web3-validator: 2.0.6
+
+  web3-validator@2.0.6:
+    dependencies:
+      ethereum-cryptography: 2.2.1
+      util: 0.12.5
+      web3-errors: 1.2.1
+      web3-types: 1.7.0
+      zod: 3.23.8
 
   webauthn-p256@0.0.5:
     dependencies:

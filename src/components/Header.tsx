@@ -30,28 +30,42 @@ const Header = () =>{
     },[account])
 
     const fetchEthBalance = async() =>{
-        const response = await axios.get(`https://pegasus.lightlink.io/api/v2/addresses/${account?.address}`,{
-            headers:{
-                "Content-Type": "application/json"
+        try{
+            const response = await axios.get(`https://pegasus.lightlink.io/api/v2/addresses/${account?.address}`,{
+                headers:{
+                    "Content-Type": "application/json"
+                }
+            })
+            if(response.status == 404){
+                return ;
             }
-        })
-        const data = response.data;
-        if(data){
-            const balance = data.coin_balance
-            setEthBalance((Number(balance)*Math.pow(10,-18)).toFixed(6))
+            const data = response.data;
+            if(data){
+                const balance = data.coin_balance
+                setEthBalance((Number(balance)*Math.pow(10,-18)).toFixed(6))
+            }
+        }catch(error){
+            console.log("Not Eth Balance")
         }
     }
 
     const fetchRaiToken = async() =>{
-        const response = await axios.get(`https://pegasus.lightlink.io/api/v2/addresses/${account?.address}/tokens?type=ERC-20`,{
-            headers:{
-                "Content-Type": "application/json"
+        try{
+            const response = await axios.get(`https://pegasus.lightlink.io/api/v2/addresses/${account?.address}/tokens?type=ERC-20`,{
+                headers:{
+                    "Content-Type": "application/json"
+                }
+            })
+            if(response.status == 404){
+                return ;
             }
-        })
-        const data = response.data;
-        if(data){
-            const balance = data.items[0].value
-            setRaiTokenBalance((Number(balance)*Math.pow(10,-18)).toFixed(0))
+            const data = response.data;
+            if(data){
+                const balance = data.items[0].value
+                setRaiTokenBalance((Number(balance)*Math.pow(10,-18)).toFixed(0))
+            }
+        }catch(error){
+            console.log("Not rai token in balance")
         }
     }
 
@@ -87,11 +101,11 @@ const Header = () =>{
                     <div className="flex flex-row items-center gap-5">
                         <div className="flex flex-row gap-1">
                             <img width={25} height={25} src="/assets/icon/eth_light.svg" alt="coin" />
-                            <p className="text-[#fff]">{ethBalance ? ethBalance : "-"}</p>
+                            <p className="text-[#fff]">{ethBalance ? ethBalance : "0"}</p>
                         </div>
                         <div className="flex flex-row gap-1">
                             <img width={25} height={25} src="/assets/icon/coin_light.svg" alt="coin" />
-                            <p className="text-[#fff]">{raiTokenBalance ?  parseDot(raiTokenBalance) : "-"}</p>
+                            <p className="text-[#fff]">{raiTokenBalance ?  parseDot(raiTokenBalance) : "0"}</p>
                         </div>
                     </div>
                     

@@ -116,9 +116,7 @@ const Mining = () =>{
         const transaction = prepareContractCall({
             contract,
             method: "getRaiToken", // <- this gets inferred from the contract
-            params: [
-                "0xea72Cd032bD0f34B460e41A81e3a9731d1013030"
-            ],
+            params: [acccont?.address.toString() as string],
         });
         sendTx(transaction as any);   
         setIsClaim(true)
