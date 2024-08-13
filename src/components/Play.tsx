@@ -28,6 +28,7 @@ const Play = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [namePet,setNamePet] = useState<string|null>(null);
     const [petList, setPetList] = useState<any|null>([]);
+    const [loadingFetch, setLoadingFetch] = useState<boolean>(true)
     const [index, setIndex] = useState<number>(0);
     const [status, setStatus] = useState<string|null>(null);
     const [error, setError] = useState<string|null>(null)
@@ -77,6 +78,7 @@ const Play = () => {
 
     useEffect(()=>{
         if(dataPet){
+            setLoadingFetch(false)
             if(petList.length > 0&&dataPet[0] == ""){
                 setNamePet(petList[index].metadata.name)
             }else{
@@ -247,12 +249,12 @@ const Play = () => {
                     </div>
                 )}
                 {
-                    petList.length == 0&&(
+                    !loadingFetch&&petList.length == 0&&(
                         <Header/>
                     )
                 }
                 {
-                    petList.length > 0 &&(
+                    !loadingFetch&&petList.length > 0 &&(
                         <div className="w-full sticky top-0 z-20">
                                 {
                                     isShow&&(
@@ -318,7 +320,7 @@ const Play = () => {
                 <div className="h-full overflow-y-auto w-full scrollbar">
                     <div className="p-3 h-full flex flex-col relative w-full">
                         {
-                            petList.length > 0 &&(
+                            !loadingFetch&&petList.length > 0 &&(
                                 <div className="flex flex-col">
                                     <div className="mt-2 h-full">
                                         <div className="w-full h-[250px] rounded-md flex justify-center flex-row relative">
@@ -360,13 +362,18 @@ const Play = () => {
                             )
                         }
                         {
-                            petList.length == 0&&(
+                            !loadingFetch&&petList.length == 0&&(
                                 <Mint/>
                             )
                         }
                     </div>
                 </div>
-                <Footer/>
+                {
+                    !loadingFetch&&(
+                        <Footer/>
+                    )
+                }
+                
             </div>
         </div>
     )

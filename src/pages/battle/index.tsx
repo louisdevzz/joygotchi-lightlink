@@ -3,31 +3,49 @@ import BattleLayout from "@/components/BattleLayout";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import axios from "axios";
-import { useEffect, useMemo, useState } from "react";
-import { eth_getTransactionReceipt, getContract, getRpcClient, prepareContractCall, toWei } from "thirdweb";
-import { useActiveAccount, useReadContract, useSendTransaction, useWaitForReceipt } from "thirdweb/react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { eth_getTransactionReceipt, getContract, getRpcClient, prepareContractCall } from "thirdweb";
+import { useActiveAccount, useReadContract, useSendTransaction } from "thirdweb/react";
 import { client } from "@/utils/utils";
-import { attackAbi, petAddress, tokenAbi } from "@/utils/abi";
+import { attackAbi, petAddress } from "@/utils/abi";
 import { decodeLog } from "web3-eth-abi";
+import CountDownTimer from "@/components/CountDownTimer";
 
 const Battle = () =>{
     const account = useActiveAccount()
     const { mutate: sendTx, data: transactionResult,isSuccess,isError: isErrorSendTx,isPending,error: ErrorTx } = useSendTransaction();
-    const { mutate: sendTransaction, data} = useSendTransaction();
     const [status, setStaus] = useState<string|null>(null)
     const [error, setError] = useState<string|null>(null)
+    const [loading, setLoading] = useState<boolean>(false)
     const [allListPet, setAllListPet] = useState<any>([]);
     const [currentIndex, setCurrentIndex] = useState<number>(0);
     const [currentIndexPet, setCurrentIndexPet] = useState<number>(0);
     const [isShow, setIsShow] = useState<boolean>(false);
     const [isAttack, setIsAttack] = useState<boolean>(false)
     const [namePet, setNamePet] = useState<string|null>(null)
-    // const [pets, setPets] = useState<any>([])
-    // const [oponents, setOponents] = useState<any>([])
+    const [isAttackf15m, setIsAttackf15m] = useState<boolean>(false)
+    const [seconds,setSeconds] = useState<number>(0)
+
     const contractAddress = "0x5D31C0fF4AAF1C906B86e65fDd3A17c7087ab1E3"
     const attackAddress = "0x828D456D397B08a19ca87Ad2Cf97598a07bf0D0E"
-    const tokenAddress = "0x774683C155327424f3d9b12a85D78f410F6E53A1"
-    const approveAmount = toWei("20000")
+    
+    useEffect(()=>{
+        if(account){
+            loadOpponent()
+        }
+    },[account])
+
+    useEffect(()=>{
+        if(localStorage.getItem("isAttackf15m")){
+            setIsAttackf15m(true)
+        }
+        const oldSeconds = Number(localStorage.getItem("timeAttack"))||0;
+        setSeconds(Math.abs(Math.floor((Date.now()-oldSeconds)/1000) - 900))
+        if(Math.floor((Date.now()-oldSeconds)/1000)>900){
+            setIsAttackf15m(false)
+            localStorage.removeItem("isAttackf15m")
+        }
+    },[])
 
     const chain = {
         id:1891,
@@ -44,13 +62,6 @@ const Battle = () =>{
         abi: petAddress
     });
 
-    const contractToken = getContract({
-        client,
-        address: tokenAddress,
-        chain,
-        abi: tokenAbi
-    });
-
     const attackContract = getContract({
         client,
         address: attackAddress,
@@ -61,73 +72,64 @@ const Battle = () =>{
         abi: attackAbi
     });
 
-    useEffect(()=>{
-        if(account){
-            loadOpponent()
+
+
+    const parseLogs = useCallback(async() =>{
+        if(isSuccess&&transactionResult.transactionHash){
+            const rpcRequest = getRpcClient({ client, chain });
+            const receipt = await eth_getTransactionReceipt(rpcRequest,{
+                hash: transactionResult.transactionHash
+            })
+            const attackEvent = receipt.logs.find(log => log.address.toLowerCase() === attackAddress.toLocaleLowerCase())
+            console.log("attackEvent",attackEvent)
+            const decodedEvent = decodeLog(
+                [
+                    { type: 'uint256', name: 'attacker' },
+                    { type: 'uint256', name: 'winner' },
+                    { type: 'uint256', name: 'loser' },
+                    { type: 'uint256', name: 'scoresWon' },
+                    { type: 'uint256', name: 'prizeDebt' }
+                ],
+                attackEvent?.data.toString() as string,
+                attackEvent?.topics as string[]
+            );
+            const { attacker, winner, loser, scoresWon, prizeDebt } = decodedEvent;
+            console.log(`Winner: ${winner}, Loser: ${loser}, Scores Won: ${scoresWon}, Prize Debt: ${prizeDebt}`);
         }
-    },[account])
+    },[transactionResult,isSuccess])
     
-    const { data: allowance, error: errorAllowance, isError: isErrorAllownce } = useReadContract({
-        contract: contractToken,
-        method: "allowance",
-        params: [account?.address as string,attackAddress],
-    });
-    console.log("allowanceapprove",allowance)
-
     useEffect(()=>{
-        if(Number(localStorage.getItem("allowanceApprove")) == 0 || allowance == BigInt(0)){
-            approveSpending()
-        }
-        localStorage.setItem("allowanceApprove",allowance?.toString() as string)
-    },[])
-
-    useEffect(()=>{
-        const parseLogs = async() =>{
-            if(isSuccess){
-                const rpcRequest = getRpcClient({ client, chain });
-                const receipt = await eth_getTransactionReceipt(rpcRequest,{
-                    hash: transactionResult.transactionHash
-                })
-                const attackEvent = receipt.logs.find(log => log.address.toLowerCase() === attackAddress.toLocaleLowerCase())
-                console.log("attackEvent",attackEvent)
-                const decodedEvent = decodeLog(
-                    [
-                        { type: 'uint256', name: 'attacker' },
-                        { type: 'uint256', name: 'winner' },
-                        { type: 'uint256', name: 'loser' },
-                        { type: 'uint256', name: 'scoresWon' },
-                        { type: 'uint256', name: 'prizeDebt' }
-                    ],
-                    attackEvent?.data.toString() as string,
-                    attackEvent?.topics as string[]
-                );
-                const { attacker, winner, loser, scoresWon, prizeDebt } = decodedEvent;
-                console.log(`Winner: ${winner}, Loser: ${loser}, Scores Won: ${scoresWon}, Prize Debt: ${prizeDebt}`);
-            }
-        }
         parseLogs()
+    },[parseLogs])
+
+    const checkStatus = useCallback(()=>{
         if(isErrorSendTx){
             console.log("ErrorTx",ErrorTx)
+            setLoading(false)
+            setError("You have one attack every 15 mins!")
+            setTimeout(() => {
+                setError(null)
+            }, 1500);
         }
-    },[isSuccess,isErrorSendTx])
+        if(isPending){
+            setLoading(true)
+        }
+        if(isSuccess&&transactionResult.transactionHash){
+            localStorage.setItem("timeAttack",Date.now().toString())
+            setIsAttackf15m(true)
+            localStorage.setItem("isAttackf15m","true")
+            setLoading(false)
+            setStaus("Attack Success!")
+            setTimeout(() => {
+                setStaus(null)
+            }, 1500);
+        }
+    },[transactionResult,isErrorSendTx,isSuccess,isPending])
 
-    const approveSpending = () =>{
-        const tokenContract = getContract({
-            client,
-            address: tokenAddress,
-            chain: {
-                id:1891,
-                rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
-            },
-            abi: tokenAbi
-        });
-        const transaction = prepareContractCall({
-            contract: tokenContract,
-            method: "approve",
-            params: [attackAddress,approveAmount]
-        });
-        sendTransaction(transaction as any); 
-    }
+    useEffect(()=>{
+        checkStatus()
+    },[checkStatus])
+
 
     const loadOpponent = async() =>{
         const response = await axios.get(`https://pegasus.lightlink.io/api/v2/tokens/0x5D31C0fF4AAF1C906B86e65fDd3A17c7087ab1E3/instances`,{
@@ -173,7 +175,7 @@ const Battle = () =>{
         const transaction = prepareContractCall({
             contract: attackContract,
             method: "attack", // <- this gets inferred from the contract
-            params: [BigInt(10),BigInt(5)],
+            params: [pets[currentIndexPet]?.id,oponents[currentIndex]?.id],
         });
         sendTx(transaction as any); 
         setIsAttack(true)
@@ -209,27 +211,39 @@ const Battle = () =>{
             <div className="h-full md:max-h-[700px] w-full md:max-w-[400px] rounded-lg shadow-lg relative">
                 <div className="bg-[#e5f2f8] flex flex-col h-full w-full relative">
                     {status&&(
-                        <div className="fixed z-50 bg-[#d4edda] w-60 h-10 top-5 left-[52%] rounded-lg border-2 border-[#c3e6cb] shadow-sm transform -translate-x-1/2 transition-all delay-75">
-                            <div className="flex flex-row w-full px-3 items-center h-full gap-2">
+                        <div className="fixed md:absolute z-50 bg-[#d4edda] w-80 h-10 top-5 left-[52%] rounded-lg border-2 border-[#c3e6cb] shadow-sm transform -translate-x-1/2 transition-all delay-75">
+                            <div className="flex flex-row w-full px-3 items-center h-full gap-2 text-center">
                                 <img width={22} src="/assets/icon/success.svg" alt="success" />
-                                <small className="text-[#155724] text-sm font-semibold">{status}</small>
+                                <small className="text-[#155724] text-[0.84rem] font-semibold">{status}</small>
+                            </div>
+                        </div>
+                    )}
+                    {loading&&(
+                        <div className="fixed md:absolute z-50 bg-[#fef3c7] w-80 h-10 top-5 left-[52%] rounded-lg border-2 border-[#fabe25] shadow-sm transform -translate-x-1/2 transition-all delay-75">
+                            <div className="flex flex-row w-full px-3 items-center h-full gap-2">
+                                <img width={22} src="/assets/icon/reload.svg" alt="reload" />
+                                <small className="text-[#f49d0c] text-[0.84rem] font-semibold">Loading....</small>
                             </div>
                         </div>
                     )}
                     {error&&(
-                        <div className="fixed z-50 bg-[#f8d7da] w-60 h-10 top-5 left-[52%] rounded-lg border-2 border-[#FF0000] shadow-sm transform -translate-x-1/2 transition-all delay-75">
-                            <div className="flex flex-row w-full px-3 items-center h-full gap-2">
+                        <div className="fixed md:absolute z-50 bg-[#f8d7da] w-80 h-10 top-5 left-[52%] rounded-lg border-2 border-[#FF0000] shadow-sm transform -translate-x-1/2 transition-all delay-75">
+                            <div className="flex flex-row w-full px-3 items-center h-full gap-2 text-center">
                                 <img width={22} src="/assets/icon/error.svg" alt="error" />
-                                <small className="text-[#FF0000] text-sm font-semibold">{error}</small>
+                                <small className="text-[#FF0000] text-[0.84rem] font-semibold">{error}</small>
                             </div>
                         </div>
                     )}
                     <Header/>
                     <div className="h-full overflow-y-auto w-full scrollbar">
                         <div className="h-full flex flex-col relative w-full">
-                            <div className="mt-2 text-center flex justify-center flex-row px-2">
-                                <p className="text-black px-2 py-1 bg-slate-300 w-full rounded-lg">Next Attack: 00:15:00</p>
-                            </div>
+                            {
+                                isAttackf15m&&(
+                                    <div className="mt-2 text-center flex justify-center flex-row px-2">
+                                        <p className="text-black px-2 py-1 bg-slate-300 w-full rounded-lg">Next Attack: <CountDownTimer seconds={seconds}/></p>
+                                    </div>
+                                )
+                            }
                             <div className="mt-2 relative px-2">
                                 <div className="w-full responsive rounded-md flex justify-center flex-row relative">
                                     {
