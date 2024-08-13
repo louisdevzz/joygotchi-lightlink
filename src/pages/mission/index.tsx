@@ -1,5 +1,6 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import Link from "next/link";
 
 const Mission = () =>{
     return(
@@ -10,7 +11,7 @@ const Mission = () =>{
                     <div className="h-full overflow-y-auto w-full scrollbar">
                         <div className="h-full flex flex-col relative w-full">
                             <div className="mt-2 px-2 flex flex-col gap-3">
-                                <a href={"/space"} className="pl-3 py-2 h-20 w-full flex justify-between rounded-lg border-2 border-[#6251A2] bg-[#6251A2] bg-opacity-25 hover:bg-opacity-35 items-center">
+                                <Link href={"/space"} className="pl-3 py-2 h-20 w-full flex justify-between rounded-lg border-2 border-[#6251A2] bg-[#6251A2] bg-opacity-25 hover:bg-opacity-35 items-center">
                                     <div>
                                         <img width={45} src="/assets/icon/diamond.svg" alt="diamond" />
                                     </div>
@@ -30,8 +31,8 @@ const Mission = () =>{
                                     <div className="h-8 w-8 mt-2">
                                         <img width={14} src="/assets/icon/arrow_right.png" alt="arrow" />
                                     </div>
-                                </a>
-                                <a href={"/space"} className="pl-3 py-2 h-20 w-full flex justify-between rounded-lg border-2 border-[#EBC351] bg-[#EBC351] bg-opacity-20 hover:bg-opacity-35 items-center">
+                                </Link>
+                                <Link href={"/space"} className="pl-3 py-2 h-20 w-full flex justify-between rounded-lg border-2 border-[#EBC351] bg-[#EBC351] bg-opacity-20 hover:bg-opacity-35 items-center">
                                     <div>
                                         <img width={45} src="/assets/icon/gold.svg" alt="gold" />
                                     </div>
@@ -51,8 +52,8 @@ const Mission = () =>{
                                     <div className="h-8 w-8 mt-2">
                                         <img width={14} src="/assets/icon/arrow_right.png" alt="arrow" />
                                     </div>
-                                </a>
-                                <a href={"/space"} className="pl-3 py-2 h-20 w-full flex justify-between rounded-lg border-2 border-[#C0C0C0] bg-[#C0C0C0] bg-opacity-25 hover:bg-opacity-35 items-center">
+                                </Link>
+                                <Link href={"/space"} className="pl-3 py-2 h-20 w-full flex justify-between rounded-lg border-2 border-[#C0C0C0] bg-[#C0C0C0] bg-opacity-25 hover:bg-opacity-35 items-center">
                                     <div>
                                         <img width={45} src="/assets/icon/star.svg" alt="star" />
                                     </div>
@@ -72,8 +73,8 @@ const Mission = () =>{
                                     <div className="h-8 w-8 mt-2">
                                         <img width={14} src="/assets/icon/arrow_right.png" alt="arrow" />
                                     </div>
-                                </a>
-                                <a href={"/space"} className="pl-3 py-2 h-20 w-full flex justify-between rounded-lg border-2 border-[#CD7F32] bg-[#CD7F32] bg-opacity-25 hover:bg-opacity-35 items-center">
+                                </Link>
+                                <Link href={"/space"} className="pl-3 py-2 h-20 w-full flex justify-between rounded-lg border-2 border-[#CD7F32] bg-[#CD7F32] bg-opacity-25 hover:bg-opacity-35 items-center">
                                     <div>
                                         <img width={45} src="/assets/icon/bronze.svg" alt="bronze" />
                                     </div>
@@ -93,7 +94,7 @@ const Mission = () =>{
                                     <div className="h-8 w-8 mt-2">
                                         <img width={14} src="/assets/icon/arrow_right.png" alt="arrow" />
                                     </div>
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     </div>

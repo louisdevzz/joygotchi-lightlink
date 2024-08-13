@@ -4,15 +4,16 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
-import { eth_getTransactionReceipt, getContract, getRpcClient, prepareContractCall } from "thirdweb";
+import { eth_getTransactionReceipt, getContract, getRpcClient, prepareContractCall, toWei } from "thirdweb";
 import { useActiveAccount, useReadContract, useSendTransaction, useWaitForReceipt } from "thirdweb/react";
 import { client } from "@/utils/utils";
-import { attackAbi, petAddress } from "@/utils/abi";
+import { attackAbi, petAddress, tokenAbi } from "@/utils/abi";
 import { decodeLog } from "web3-eth-abi";
 
 const Battle = () =>{
     const account = useActiveAccount()
-    const { mutate: sendTx, data: transactionResult,isSuccess,isError: isErrorSendTx,isPending } = useSendTransaction();
+    const { mutate: sendTx, data: transactionResult,isSuccess,isError: isErrorSendTx,isPending,error: ErrorTx } = useSendTransaction();
+    const { mutate: sendTransaction, data} = useSendTransaction();
     const [status, setStaus] = useState<string|null>(null)
     const [error, setError] = useState<string|null>(null)
     const [allListPet, setAllListPet] = useState<any>([]);
@@ -25,6 +26,8 @@ const Battle = () =>{
     // const [oponents, setOponents] = useState<any>([])
     const contractAddress = "0x5D31C0fF4AAF1C906B86e65fDd3A17c7087ab1E3"
     const attackAddress = "0x828D456D397B08a19ca87Ad2Cf97598a07bf0D0E"
+    const tokenAddress = "0x774683C155327424f3d9b12a85D78f410F6E53A1"
+    const approveAmount = toWei("20000")
 
     const chain = {
         id:1891,
@@ -39,6 +42,13 @@ const Battle = () =>{
             rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
         },
         abi: petAddress
+    });
+
+    const contractToken = getContract({
+        client,
+        address: tokenAddress,
+        chain,
+        abi: tokenAbi
     });
 
     const attackContract = getContract({
@@ -57,14 +67,29 @@ const Battle = () =>{
         }
     },[account])
     
+    const { data: allowance, error: errorAllowance, isError: isErrorAllownce } = useReadContract({
+        contract: contractToken,
+        method: "allowance",
+        params: [account?.address as string,attackAddress],
+    });
+    console.log("allowanceapprove",allowance)
+
+    useEffect(()=>{
+        if(Number(localStorage.getItem("allowanceApprove")) == 0 || allowance == BigInt(0)){
+            approveSpending()
+        }
+        localStorage.setItem("allowanceApprove",allowance?.toString() as string)
+    },[])
+
     useEffect(()=>{
         const parseLogs = async() =>{
-            if(transactionResult){
+            if(isSuccess){
                 const rpcRequest = getRpcClient({ client, chain });
                 const receipt = await eth_getTransactionReceipt(rpcRequest,{
                     hash: transactionResult.transactionHash
                 })
                 const attackEvent = receipt.logs.find(log => log.address.toLowerCase() === attackAddress.toLocaleLowerCase())
+                console.log("attackEvent",attackEvent)
                 const decodedEvent = decodeLog(
                     [
                         { type: 'uint256', name: 'attacker' },
@@ -74,14 +99,35 @@ const Battle = () =>{
                         { type: 'uint256', name: 'prizeDebt' }
                     ],
                     attackEvent?.data.toString() as string,
-                    attackEvent?.topics.slice(1).toString() as string
+                    attackEvent?.topics as string[]
                 );
                 const { attacker, winner, loser, scoresWon, prizeDebt } = decodedEvent;
                 console.log(`Winner: ${winner}, Loser: ${loser}, Scores Won: ${scoresWon}, Prize Debt: ${prizeDebt}`);
             }
         }
         parseLogs()
-    },[])
+        if(isErrorSendTx){
+            console.log("ErrorTx",ErrorTx)
+        }
+    },[isSuccess,isErrorSendTx])
+
+    const approveSpending = () =>{
+        const tokenContract = getContract({
+            client,
+            address: tokenAddress,
+            chain: {
+                id:1891,
+                rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
+            },
+            abi: tokenAbi
+        });
+        const transaction = prepareContractCall({
+            contract: tokenContract,
+            method: "approve",
+            params: [attackAddress,approveAmount]
+        });
+        sendTransaction(transaction as any); 
+    }
 
     const loadOpponent = async() =>{
         const response = await axios.get(`https://pegasus.lightlink.io/api/v2/tokens/0x5D31C0fF4AAF1C906B86e65fDd3A17c7087ab1E3/instances`,{
@@ -100,7 +146,7 @@ const Battle = () =>{
         const oponents = allListPet.filter((opponent:any)=> opponent.owner.hash !== account?.address )
         return [pets, oponents];
     }, [allListPet,account]);
-
+    //console.log(oponents)
     const { data: dataPet, isError,refetch } = useReadContract({
         contract: contractPet,
         method: "getPetInfo",
@@ -123,10 +169,11 @@ const Battle = () =>{
 
 
     const onAttack = () =>{
+        console.log("attack")
         const transaction = prepareContractCall({
             contract: attackContract,
             method: "attack", // <- this gets inferred from the contract
-            params: [pets[currentIndexPet]?.id,oponents[currentIndex]?.id],
+            params: [BigInt(10),BigInt(5)],
         });
         sendTx(transaction as any); 
         setIsAttack(true)
@@ -155,7 +202,7 @@ const Battle = () =>{
         return item ? (num / item.value).toFixed(digits).replace(regexp, "").concat(item.symbol) : "0";
     }
 
-    console.log(isShow)
+    //console.log(isShow)
 
     return(
         <div className="h-screen w-full flex flex-row justify-center items-center">

@@ -47,7 +47,7 @@ const Settings = () =>{
         const data = response.data;
         if(data){
             const balance = data.items[0].value
-            setRaiTokenBalance((Number(balance)*Math.pow(10,-18)).toString())
+            setRaiTokenBalance((Number(balance)*Math.pow(10,-18)).toFixed(0))
         }
     }
 
