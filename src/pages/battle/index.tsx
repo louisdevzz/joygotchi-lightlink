@@ -27,8 +27,6 @@ const Battle = () =>{
     const [isAttackf15m, setIsAttackf15m] = useState<boolean>(false)
     const [isAttacked,setIsAttacked] = useState<boolean>(false);
     const [seconds,setSeconds] = useState<number>(0)
-    const [stauts, setStatus] = useState<string|null>(null);
-    const [score, setScore] = useState<string|null>(null);
     const [petInfolist, setPetInfoList] = useState<any>([]);
 
     const contractAddress = "0x5D31C0fF4AAF1C906B86e65fDd3A17c7087ab1E3"
@@ -75,7 +73,7 @@ const Battle = () =>{
 
 
     const parseLogs = useCallback(async() =>{
-        if(isAttacked&&isSuccess&&transactionResult.transactionHash){
+        if(isAttacked&&transactionResult){
             const rpcRequest = getRpcClient({ client, chain });
             const receipt = await eth_getTransactionReceipt(rpcRequest,{
                 hash: transactionResult.transactionHash
@@ -94,9 +92,21 @@ const Battle = () =>{
                 attackEvent?.topics as string[]
             );
             const { attacker, winner, loser, scoresWon, prizeDebt } = decodedEvent;
+            const res = await axios.post("/api/attack/history",{
+                attacker: account?.address,
+                winner: Number(winner),
+                loser: Number(loser),
+                scoresWon: Number(scoresWon),
+                prizeDebt: Number(prizeDebt)
+            },{
+                headers:{
+                    "Content-Type": "application/json"
+                }
+            });
+            console.log("post history", res.data.acknowledged)
             console.log(`Winner: ${winner}, Loser: ${loser}, Scores Won: ${scoresWon}, Prize Debt: ${prizeDebt}`);
         }
-    },[transactionResult,isSuccess])
+    },[transactionResult,isAttacked])
     
     useEffect(()=>{
         parseLogs()
@@ -114,7 +124,7 @@ const Battle = () =>{
         if(isPending){
             setLoading(true)
         }
-        if(isAttacked&&isSuccess&&transactionResult.transactionHash){
+        if(isAttacked&&transactionResult){
             localStorage.setItem("timeAttack",Date.now().toString())
             setIsAttackf15m(true)
             localStorage.setItem("isAttackf15m","true")
@@ -125,7 +135,7 @@ const Battle = () =>{
                 setStaus(null)
             }, 1500);
         }
-    },[transactionResult,isErrorSendTx,isSuccess,isPending])
+    },[transactionResult,isErrorSendTx,isSuccess,isPending,isAttacked])
 
     useEffect(()=>{
         checkStatus()
@@ -163,7 +173,7 @@ const Battle = () =>{
     useEffect(()=>{
         if(dataPet){
             if(pets.length > 0&&dataPet[0] == ""){
-                setNamePet(pets[currentIndex].metadata.name)
+                setNamePet(pets[currentIndexPet].metadata.name)
             }else{
                 setNamePet(dataPet[0])
             }
@@ -186,7 +196,8 @@ const Battle = () =>{
         }, 120);
         setTimeout(() => {
             setIsAttacked(true)
-        }, 2000);
+            console.log("attacked")
+        }, 5000);
     }
 
     const handlSelectPet = (idx: number) => {
