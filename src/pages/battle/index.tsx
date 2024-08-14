@@ -24,6 +24,7 @@ const Battle = () =>{
     const [isAttack, setIsAttack] = useState<boolean>(false)
     const [namePet, setNamePet] = useState<string|null>(null)
     const [isAttackf15m, setIsAttackf15m] = useState<boolean>(false)
+    const [isAttacked,setIsAttacked] = useState<boolean>(false);
     const [seconds,setSeconds] = useState<number>(0)
 
     const contractAddress = "0x5D31C0fF4AAF1C906B86e65fDd3A17c7087ab1E3"
@@ -75,7 +76,7 @@ const Battle = () =>{
 
 
     const parseLogs = useCallback(async() =>{
-        if(isSuccess&&transactionResult.transactionHash){
+        if(isAttacked&&isSuccess&&transactionResult.transactionHash){
             const rpcRequest = getRpcClient({ client, chain });
             const receipt = await eth_getTransactionReceipt(rpcRequest,{
                 hash: transactionResult.transactionHash
@@ -95,6 +96,9 @@ const Battle = () =>{
             );
             const { attacker, winner, loser, scoresWon, prizeDebt } = decodedEvent;
             console.log(`Winner: ${winner}, Loser: ${loser}, Scores Won: ${scoresWon}, Prize Debt: ${prizeDebt}`);
+        }
+        if(isSuccess&&transactionResult.transactionHash){
+            setLoading(true)
         }
     },[transactionResult,isSuccess])
     
@@ -119,6 +123,7 @@ const Battle = () =>{
             setIsAttackf15m(true)
             localStorage.setItem("isAttackf15m","true")
             setLoading(false)
+            setSeconds(900)
             setStaus("Attack Success!")
             setTimeout(() => {
                 setStaus(null)
@@ -182,6 +187,9 @@ const Battle = () =>{
         setTimeout(() => {
             setIsAttack(false)
         }, 120);
+        setTimeout(() => {
+            setIsAttacked(true)
+        }, 3000);
     }
 
     const handlSelectPet = (idx: number) => {

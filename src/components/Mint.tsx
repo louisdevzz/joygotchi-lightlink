@@ -121,9 +121,9 @@ const Mint = () =>{
         setImage("https://bafkreid32fvsd54vejrhsp26zebufsdqnx7jjgtg7j5odp6vyc3b4joecm.ipfs.nftstorage.link")
         setCurrentIndex(1)
     }
-    
+    //console.log("ethBlanceData",ethBlanceData)
     const onMint = async() =>{
-        if(Number(ethBlanceData?.value.toString()) > 0){
+        if(parseFloat(ethBlanceData?.value.toString() as string) > 0){
             if(Number(tokenBlanceData?.value.toString()) > 0){
                 const transaction = prepareContractCall({
                     contract,

@@ -35,7 +35,7 @@ const ScreenPet = ({petList,changeName,setIndex,dataPet}:{petList: any,changeNam
             <button onClick={goToPrevious}>
                 <img width={10} height={10} className="w-6 h-6 absolute top-1/2 -left-[30px] " src="/assets/icon/arrow_left.png" alt="arrow" />
             </button>
-            <img className="ml-6" width={150} src={petList[currentIndex].image_url} alt={petList[currentIndex].metadata.name} />
+            <img className="ml-6" width={150} src={petList[currentIndex].image_url} alt={petList[currentIndex].metadata&&petList[currentIndex].metadata.name} />
             <button onClick={goToNext}>
                 <img width={10} height={10} className="w-6 h-6 absolute top-1/2 -right-[40px] " src="/assets/icon/arrow_right.png" alt="arrow" />
             </button>

@@ -34,7 +34,6 @@ const Play = () => {
     const [error, setError] = useState<string|null>(null)
     const router = useRouter();
     const contractAddress = "0x5D31C0fF4AAF1C906B86e65fDd3A17c7087ab1E3"
-
     const contractPet = getContract({
         client,
         address: contractAddress,
@@ -153,6 +152,7 @@ const Play = () => {
                 setPetList(data.items)
             }
         }catch(error){
+            setLoadingFetch(false)
             console.log("not pet in wallet")
         }
     }
