@@ -51,7 +51,7 @@ const Play = () => {
         method: "getPetInfo",
         params: [petList[index]?.id],
     });
-    
+    //console.log("petList",account?.address)
     if(isError){
         console.log('You have not pet',ErrorPet)
     }
@@ -115,6 +115,7 @@ const Play = () => {
                 setEthBalance((Number(balance)*Math.pow(10,-18)).toFixed(6))
             }
         }catch(error){
+            setLoadingFetch(false)
             console.log("Not Eth Balance")
         }
     }
@@ -135,6 +136,7 @@ const Play = () => {
                 setRaiTokenBalance((Number(balance)*Math.pow(10,-18)).toFixed(0))
             }
         }catch(error){
+            setLoadingFetch(false)
             console.log("Not rai token in balance")
         }
     }

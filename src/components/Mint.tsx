@@ -24,9 +24,9 @@ const Mint = () =>{
     const { mutate: sendTx, data: transactionResult,isError,error: errorTrx,isSuccess, isPending: isPendingTransaction } = useSendTransaction();
     const { mutate: sendTransaction, data: txResult,isSuccess: isSuccessTx } = useSendTransaction();
     const contractAddress = "0x5D31C0fF4AAF1C906B86e65fDd3A17c7087ab1E3"
-    const faucetAddress= "0x937529264EBF13a0203cfAf7bBf09a3822f6636a"
     const tokenAdrees = "0x774683C155327424f3d9b12a85D78f410F6E53A1"
     const MAX_ALLOWANCE = BigInt('20000000000000000000000')
+    
     const chain = {
         id:1891,
         rpc:"https://replicator-01.pegasus.lightlink.io/rpc/v1"
@@ -73,7 +73,7 @@ const Mint = () =>{
         method: "allowance",
         params: [account?.address as string,contractAddress],
     });
-    //console.log("allowance",allowance)
+    console.log("allowance",allowance)
     const transactionAllowance = prepareContractCall({
         contract: contractToken,
         method: "approve",

@@ -73,6 +73,12 @@ const Battle = () =>{
 
 
     const parseLogs = useCallback(async() =>{
+        if(transactionResult?.transactionHash){
+            setTimeout(() => {
+                setIsAttacked(true)
+                console.log("attacked")
+            }, 3000);
+        }
         if(isAttacked&&transactionResult){
             const rpcRequest = getRpcClient({ client, chain });
             const receipt = await eth_getTransactionReceipt(rpcRequest,{
@@ -194,10 +200,6 @@ const Battle = () =>{
         setTimeout(() => {
             setIsAttack(false)
         }, 120);
-        setTimeout(() => {
-            setIsAttacked(true)
-            console.log("attacked")
-        }, 5000);
     }
 
     const handlSelectPet = (idx: number) => {
