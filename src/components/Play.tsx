@@ -34,24 +34,26 @@ const Play = () => {
     const [error, setError] = useState<string|null>(null)
     const router = useRouter();
     const contractAddress = "0x5D31C0fF4AAF1C906B86e65fDd3A17c7087ab1E3"
+    
+    const chain = {
+        id:1891,
+        rpc:"https://replicator-01.pegasus.lightlink.io/rpc/v1"
+    }
+
     const contractPet = getContract({
         client,
         address: contractAddress,
-        chain: {
-            id:1891,
-            rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
-        },
+        chain,
         abi: petAddress
     });
-
-    const { data: dataPet, isError,refetch } = useReadContract({
+    const { data: dataPet, isError,refetch,error:ErrorPet } = useReadContract({
         contract: contractPet,
         method: "getPetInfo",
         params: [petList[index]?.id],
     });
     
     if(isError){
-        console.log('You have not pet')
+        console.log('You have not pet',ErrorPet)
     }
 
     useEffect(()=>{
@@ -148,9 +150,7 @@ const Play = () => {
                 return ;
             }
             const data = response.data;
-            if(data){
-                setPetList(data.items)
-            }
+            setPetList(data.items)
         }catch(error){
             setLoadingFetch(false)
             console.log("not pet in wallet")
@@ -162,10 +162,7 @@ const Play = () => {
         const contract = getContract({
             client,
             address: contractAddress,
-            chain: {
-                id:1891,
-                rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
-            },
+            chain,
             abi: petAddress
         });
         const transaction = prepareContractCall({

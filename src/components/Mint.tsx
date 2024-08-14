@@ -29,16 +29,13 @@ const Mint = () =>{
     const MAX_ALLOWANCE = BigInt('20000000000000000000000')
     const chain = {
         id:1891,
-        rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
+        rpc:"https://replicator-01.pegasus.lightlink.io/rpc/v1"
     }
 
     const contract = getContract({
         client,
         address: contractAddress,
-        chain: {
-            id:1891,
-            rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
-        },
+        chain,
         abi: petAddress
     });
 

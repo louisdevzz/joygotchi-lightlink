@@ -10,6 +10,7 @@ import { client } from "@/utils/utils";
 import { attackAbi, petAddress } from "@/utils/abi";
 import { decodeLog } from "web3-eth-abi";
 import CountDownTimer from "@/components/CountDownTimer";
+import { Web3 } from 'web3';
 
 const Battle = () =>{
     const account = useActiveAccount()
@@ -26,10 +27,14 @@ const Battle = () =>{
     const [isAttackf15m, setIsAttackf15m] = useState<boolean>(false)
     const [isAttacked,setIsAttacked] = useState<boolean>(false);
     const [seconds,setSeconds] = useState<number>(0)
+    const [stauts, setStatus] = useState<string|null>(null);
+    const [score, setScore] = useState<string|null>(null);
+    const [petInfolist, setPetInfoList] = useState<any>([]);
 
     const contractAddress = "0x5D31C0fF4AAF1C906B86e65fDd3A17c7087ab1E3"
     const attackAddress = "0x828D456D397B08a19ca87Ad2Cf97598a07bf0D0E"
-    
+    const web3 = new Web3('https://replicator-01.pegasus.lightlink.io/rpc/v1'); 
+    const raiGotchiContract = new web3.eth.Contract(petAddress, contractAddress);
     useEffect(()=>{
         if(account){
             loadOpponent()
@@ -50,26 +55,20 @@ const Battle = () =>{
 
     const chain = {
         id:1891,
-        rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
+        rpc:"https://replicator-01.pegasus.lightlink.io/rpc/v1"
     }
 
     const contractPet = getContract({
         client,
         address: contractAddress,
-        chain: {
-            id:1891,
-            rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
-        },
+        chain,
         abi: petAddress
     });
 
     const attackContract = getContract({
         client,
         address: attackAddress,
-        chain: {
-            id:1891,
-            rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
-        },
+        chain,
         abi: attackAbi
     });
 
@@ -97,9 +96,6 @@ const Battle = () =>{
             const { attacker, winner, loser, scoresWon, prizeDebt } = decodedEvent;
             console.log(`Winner: ${winner}, Loser: ${loser}, Scores Won: ${scoresWon}, Prize Debt: ${prizeDebt}`);
         }
-        if(isSuccess&&transactionResult.transactionHash){
-            setLoading(true)
-        }
     },[transactionResult,isSuccess])
     
     useEffect(()=>{
@@ -118,7 +114,7 @@ const Battle = () =>{
         if(isPending){
             setLoading(true)
         }
-        if(isSuccess&&transactionResult.transactionHash){
+        if(isAttacked&&isSuccess&&transactionResult.transactionHash){
             localStorage.setItem("timeAttack",Date.now().toString())
             setIsAttackf15m(true)
             localStorage.setItem("isAttackf15m","true")
@@ -172,6 +168,7 @@ const Battle = () =>{
                 setNamePet(dataPet[0])
             }
         }
+        loadPetInfo()
     },[pets,dataPet])
 
 
@@ -189,7 +186,7 @@ const Battle = () =>{
         }, 120);
         setTimeout(() => {
             setIsAttacked(true)
-        }, 3000);
+        }, 2000);
     }
 
     const handlSelectPet = (idx: number) => {
@@ -212,7 +209,31 @@ const Battle = () =>{
         return item ? (num / item.value).toFixed(digits).replace(regexp, "").concat(item.symbol) : "0";
     }
 
-    //console.log(isShow)
+    const loadPetInfo = async() =>{
+        if(pets.length > 0){
+            const petInfomation:any = []
+            for(let i = 0; i < pets.length; i++){
+                const petInfo = await raiGotchiContract.methods.getPetInfo(pets[i].id).call();
+                const cleanPetInfo = {
+                    _id:pets[i].id,
+                    _name: petInfo._name,
+                    _status: petInfo._status,
+                    _score: petInfo._score,
+                    _level: petInfo._level,
+                    _timeUntilStarving: petInfo._timeUntilStarving,
+                    _owner: petInfo._owner,
+                    _rewards: petInfo._rewards,
+                    _genes: petInfo._genes
+                };
+                petInfomation.push(cleanPetInfo)
+                //console.log(`[INFO] Pet ${pets[i].id} Info:`, cleanPetInfo);
+            }
+            setPetInfoList(petInfomation)
+            //console.log("petinfo",petInfomation)
+        }
+    }
+
+    //console.log(petInfolist)
 
     return(
         <div className="h-screen w-full flex flex-row justify-center items-center">
@@ -313,7 +334,47 @@ const Battle = () =>{
                             
                             
                         </div>
-                        
+                        {
+                            isShow&&(
+                                <div className="fixed top-0 left-0 z-50 h-screen w-full flex flex-row justify-center items-center ">
+                                    <div className="h-full md:max-h-[700px] p-3 w-full md:max-w-[400px] rounded-lg shadow-lg relative bg-black bg-opacity-40">
+                                        <div className="bg-white h-full w-full rounded-lg text-black p-3">
+                                            <div className="flex flex-row justify-between items-center">
+                                                <span>List All Pet</span>
+                                                <button onClick={()=>setIsShow(false)}>
+                                                    <img width={30} src="/assets/icon/close.svg" alt="icon" />
+                                                </button>
+                                            </div>
+                                            <div className="overflow-y-auto gap-2 mt-2 h-full flex flex-col">
+                                                {pets.length > 0&&petInfolist.length > 0&&pets.map((pet:any,idx:number)=>{
+                                                    const petInfo = petInfolist.filter((p:any)=>p._id==pet.id)
+                                                    return(
+                                                        <div key={idx} onClick={()=>handlSelectPet(idx)} className="w-full bg-[#a9c6e4] px-1 py-2 cursor-pointer hover:bg-opacity-75 focus:bg-opacity-75 rounded-lg flex flex-row justify-between items-center text-black">
+                                                            <div className="flex flex-row items-center gap-2">
+                                                                <img className="-mt-2" width={62} src={pet.metadata.image} alt="pet" />
+                                                                <div className="flex flex-col">
+                                                                    <p className="text-sm">{petInfo&&petInfo[0]._name == ""?pet.metadata.name:petInfo[0]._name}</p>
+                                                                    <div className="flex flex-row gap-3">
+                                                                        <div className="flex flex-col">
+                                                                            <small>ATK: 100</small>
+                                                                            <small>DEF: 100</small>
+                                                                        </div>
+                                                                        <div className="flex flex-col">
+                                                                            <small>Status: {petInfo ? petInfo[0]._status.toString():"-"}</small>
+                                                                            <small>Score: {petInfo ? nFormatter(Number(petInfo[0]._score.toString()),1):"-"}</small>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                })}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        }
                     </div>
                     <Footer/>
                     

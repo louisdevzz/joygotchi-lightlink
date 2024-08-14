@@ -28,22 +28,21 @@ const BuyItem = ({petList,index,status,loading,error, refetch, optionFetchs}:{pe
     const tokenAddress = "0x774683C155327424f3d9b12a85D78f410F6E53A1"
     const approveAmount = toWei("20000")
 
+    const chain ={
+        id: 1891,
+        rpc: "https://replicator-01.pegasus.lightlink.io/rpc/v1"
+    }
+
     const contractPet = getContract({
         client,
         address: contractAddress,
-        chain: {
-            id:1891,
-            rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
-        },
+        chain,
         abi: petAddress
     });
     const contractToken = getContract({
         client,
         address: tokenAddress,
-        chain: {
-            id:1891,
-            rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
-        },
+        chain,
         abi: tokenAbi
     });
     
@@ -120,10 +119,7 @@ const BuyItem = ({petList,index,status,loading,error, refetch, optionFetchs}:{pe
         const itemsContract = getContract({
             client,
             address: tokenAddress,
-            chain: {
-                id:1891,
-                rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
-            },
+            chain,
             abi: tokenAbi
         });
         const transaction = prepareContractCall({
@@ -141,10 +137,7 @@ const BuyItem = ({petList,index,status,loading,error, refetch, optionFetchs}:{pe
                 const itemsContract = getContract({
                     client,
                     address: immidiateUseItemsContract,
-                    chain: {
-                        id:1891,
-                        rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
-                    },
+                    chain,
                     abi: itemAbi
                 });
                 const transaction = prepareContractCall({

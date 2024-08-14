@@ -1,7 +1,6 @@
 'use client'
 import { useEffect, useState } from "react"
 import Link from "next/link";
-import { Near } from "@/utils/near";
 import axios from "axios";
 import { useActiveAccount } from "thirdweb/react";
 

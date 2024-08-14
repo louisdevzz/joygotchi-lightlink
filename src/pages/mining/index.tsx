@@ -24,7 +24,7 @@ const Mining = () =>{
     const { mutate: sendTx, data: transactionResult,isSuccess,isError,isPending } = useSendTransaction();
     const chain = {
         id:1891,
-        rpc:"https://1891.rpc.thirdweb.com/6f3aa29d720d4272cea48e0aaa54e79e"
+        rpc:"https://replicator-01.pegasus.lightlink.io/rpc/v1"
     }
 	//console.log("address", acccont?.address);
 
