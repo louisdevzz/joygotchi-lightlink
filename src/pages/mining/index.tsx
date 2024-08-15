@@ -3,8 +3,8 @@ import CountDownTimer from "@/components/CountDownTimer";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { faucetAbi } from "@/utils/abi";
-import { useEffect, useState } from "react";
-import { createThirdwebClient, getContract, getGasPrice, prepareContractCall, prepareTransaction, sendAndConfirmTransaction, sendTransaction, simulateTransaction } from "thirdweb";
+import { use, useEffect, useState } from "react";
+import { createThirdwebClient, getContract, getGasPrice, prepareContractCall} from "thirdweb";
 import { useActiveAccount, useSendTransaction,useWaitForReceipt } from "thirdweb/react";
 const client = createThirdwebClient({
     clientId: process.env.CLIENT_ID!
@@ -19,6 +19,7 @@ const Mining = () =>{
     const [error, setError] = useState<string|null>(null)
     const [isShowModal, setIsShowModal] = useState<boolean>(false);
     const [isClaim, setIsClaim] = useState<boolean>(false)
+    const [gas, setGas] = useState<bigint|null>(null)
     const faucetAddress= "0x937529264EBF13a0203cfAf7bBf09a3822f6636a"
     const acccont = useActiveAccount();
     const { mutate: sendTx, data: transactionResult,isSuccess,isError,isPending } = useSendTransaction();
@@ -27,6 +28,17 @@ const Mining = () =>{
         rpc:"https://replicator-01.pegasus.lightlink.io/rpc/v1"
     }
 	//console.log("address", acccont?.address);
+
+    useEffect(()=>{
+        const loadGasPrice = async()=>{
+            const gasPrice = await getGasPrice({
+                client,
+                chain
+            })
+            setGas(gasPrice)
+        }
+        loadGasPrice()
+    },[gas])
 
     useEffect(()=>{
         if(isSuccess){
@@ -117,6 +129,7 @@ const Mining = () =>{
             contract,
             method: "getRaiToken", // <- this gets inferred from the contract
             params: [acccont?.address.toString() as string],
+            gas: gas as bigint
         });
         sendTx(transaction as any);   
         setIsClaim(true)

@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import axios from "axios";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { eth_getTransactionReceipt, getContract, getRpcClient, prepareContractCall } from "thirdweb";
+import { eth_getTransactionReceipt, getContract, getGasPrice, getRpcClient, prepareContractCall } from "thirdweb";
 import { useActiveAccount, useReadContract, useSendTransaction } from "thirdweb/react";
 import { client } from "@/utils/utils";
 import { attackAbi, petAddress } from "@/utils/abi";
@@ -28,6 +28,7 @@ const Battle = () =>{
     const [isAttacked,setIsAttacked] = useState<boolean>(false);
     const [seconds,setSeconds] = useState<number>(0)
     const [petInfolist, setPetInfoList] = useState<any>([]);
+    const [gas, setGas] = useState<bigint|null>(null)
 
     const contractAddress = "0x5D31C0fF4AAF1C906B86e65fDd3A17c7087ab1E3"
     const attackAddress = "0x828D456D397B08a19ca87Ad2Cf97598a07bf0D0E"
@@ -55,6 +56,18 @@ const Battle = () =>{
         id:1891,
         rpc:"https://replicator-01.pegasus.lightlink.io/rpc/v1"
     }
+
+
+    useEffect(()=>{
+        const loadGasPrice = async()=>{
+            const gasPrice = await getGasPrice({
+                client,
+                chain
+            })
+            setGas(gasPrice)
+        }
+        loadGasPrice()
+    },[gas])
 
     const contractPet = getContract({
         client,
@@ -170,6 +183,7 @@ const Battle = () =>{
         contract: contractPet,
         method: "getPetInfo",
         params: [pets[currentIndexPet]?.id],
+        gas: gas as bigint
     });
     
     if(isError){

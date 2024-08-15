@@ -1,9 +1,8 @@
 'use client'
-import { faucetAbi, petAddress, tokenAbi } from "@/utils/abi";
-import axios from "axios";
+import { petAddress, tokenAbi } from "@/utils/abi";
 import { useEffect, useState } from "react"
 
-import { createThirdwebClient, prepareContractCall,getContract } from "thirdweb";
+import { createThirdwebClient, prepareContractCall,getContract, getGasPrice } from "thirdweb";
 import { useActiveAccount, useReadContract,useSendTransaction,useWalletBalance } from "thirdweb/react";
 
 const client = createThirdwebClient({
@@ -20,6 +19,7 @@ const Mint = () =>{
     const [error, setError] = useState<string|null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [isApprove, setIsApprove] = useState<boolean>(false);
+    const [gas, setGas] = useState<bigint|null>(null)
     const [currentIndex, setCurrentIndex] = useState<number>(0)
     const { mutate: sendTx, data: transactionResult,isError,error: errorTrx,isSuccess, isPending: isPendingTransaction } = useSendTransaction();
     const { mutate: sendTransaction, data: txResult,isSuccess: isSuccessTx } = useSendTransaction();
@@ -31,13 +31,24 @@ const Mint = () =>{
         id:1891,
         rpc:"https://replicator-01.pegasus.lightlink.io/rpc/v1"
     }
-
+    
     const contract = getContract({
         client,
         address: contractAddress,
         chain,
         abi: petAddress
     });
+
+    useEffect(()=>{
+        const loadGasPrice = async()=>{
+            const gasPrice = await getGasPrice({
+                client,
+                chain
+            })
+            setGas(gasPrice)
+        }
+        loadGasPrice()
+    },[gas])
 
     useEffect(()=>{
         if(isSuccess){
@@ -73,7 +84,7 @@ const Mint = () =>{
         method: "allowance",
         params: [account?.address as string,contractAddress],
     });
-    console.log("allowance",allowance)
+    //console.log("allowance",allowance)
     const transactionAllowance = prepareContractCall({
         contract: contractToken,
         method: "approve",
@@ -125,7 +136,8 @@ const Mint = () =>{
                 const transaction = prepareContractCall({
                     contract,
                     method: "mint",
-                    params: []
+                    params: [],
+                    gas: gas as bigint
                 });
                 sendTx(transaction as any);  
             }else{
