@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
-import { getContract, prepareContractCall, toWei } from "thirdweb";
+import { getContract, getGasPrice, prepareContractCall, toWei } from "thirdweb";
 import { useActiveAccount, useReadContract, useSendTransaction } from "thirdweb/react";
 import { client } from "@/utils/utils";
 import { itemAbi, petAddress, tokenAbi } from "@/utils/abi";
@@ -20,6 +20,7 @@ interface options{
 const BuyItem = ({petList,index,status,loading,error, refetch, optionFetchs}:{petList:any,index:number,status:any,loading: any,error:any,refetch:any, optionFetchs:options}) =>{
     const account = useActiveAccount()
     const [currentIndex, setCurrentIndex] = useState<number>(0);
+    const [gas, setGas] = useState<bigint|null>(null)
     const [itemId, setItemId] = useState<number>(0)
     const { mutate: sendTransaction, data: txResult,isSuccess: isSuccessTx,isPending: isPendingTx,isError,error: errorTx } = useSendTransaction();
     const { mutate: sendTx, error: errorApprove,isSuccess: isSuccessApprove,isPending: isPendingApprove,data: dataApprove } = useSendTransaction();
@@ -32,6 +33,17 @@ const BuyItem = ({petList,index,status,loading,error, refetch, optionFetchs}:{pe
         id: 1891,
         rpc: "https://replicator-01.pegasus.lightlink.io/rpc/v1"
     }
+
+    useEffect(()=>{
+        const loadGasPrice = async()=>{
+            const gasPrice = await getGasPrice({
+                client,
+                chain
+            })
+            setGas(gasPrice)
+        }
+        loadGasPrice()
+    },[gas])
 
     const contractPet = getContract({
         client,
@@ -125,7 +137,8 @@ const BuyItem = ({petList,index,status,loading,error, refetch, optionFetchs}:{pe
         const transaction = prepareContractCall({
             contract: itemsContract,
             method: "approve",
-            params: [immidiateUseItemsContract,approveAmount]
+            params: [immidiateUseItemsContract,approveAmount],
+            gas: gas as bigint
         });
         sendTx(transaction as any); 
     }
@@ -143,7 +156,8 @@ const BuyItem = ({petList,index,status,loading,error, refetch, optionFetchs}:{pe
                 const transaction = prepareContractCall({
                     contract: itemsContract,
                     method: "buyImidiateUseItem",
-                    params: [petList[index]?.id,BigInt(itemId)]
+                    params: [petList[index]?.id,BigInt(itemId)],
+                    gas: gas as bigint
                 });
                 sendTransaction(transaction as any); 
             }else{
