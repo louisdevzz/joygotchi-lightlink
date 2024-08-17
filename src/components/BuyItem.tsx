@@ -76,7 +76,7 @@ const BuyItem = ({petList,index,status,loading,error, refetch, optionFetchs}:{pe
             approveSpending()
         }
         localStorage.setItem("allowanceApprove",allowance?.toString() as string)
-    },[])
+    },[allowance])
 
 
     useEffect(()=>{
