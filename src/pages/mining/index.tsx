@@ -202,40 +202,42 @@ const Mining = () =>{
                 </div>
                 {
                     isShowModal&&(
-                        <div className="fixed top-0 min-h-screen md:w-[400px] md:h-[700px] screen bg-black bg-opacity-60 z-50 flex justify-center items-center overflow-hidden">
-                            <div className="bg-white h-[80vh] mt-5 w-[95%] rounded-lg flex flex-col p-2 pb-5">
-                                <div className="flex flex-col overflow-y-auto">
-                                <div className="flex justify-between flex-row">
-                                    <span className="text-black text-2xl">Tool Slot</span>
-                                    <button onClick={()=>setIsShowModal(false)}>
-                                        <img width={35} src="/assets/icon/close.svg" alt="close" />
-                                    </button>
-                                </div>
-                                <div className="flex flex-row justify-end items-center mt-1">
-                                    <button className="text-white bg-red-500 px-2 py-1 rounded-lg flex flex-row gap-2 items-center">
-                                        <img width={20} src="/assets/icon/close-btn.svg" alt="closeBtn" />
-                                        <span className="">Remove tool</span>
-                                    </button>
-                                </div>
-                                <div className="w-full h-full mt-5 flex flex-row flex-wrap gap-5 gap-y-16 overflow-y-auto items-center justify-center">
-                                    <div onClick={()=>setIsShowModal(true)} className="h-44 w-36 shadow-lg ">
-                                        <img width={100} className="w-full" src="/assets/tools/card-tool.png" alt="tool" />
-                                    </div>
-                                    <div onClick={()=>setIsShowModal(true)} className="h-44 w-36 shadow-lg ">
-                                        <img width={100} className="w-full" src="/assets/tools/card-tool.png" alt="tool" />
-                                    </div>
-                                    <div onClick={()=>setIsShowModal(true)} className="h-44 w-36 shadow-lg ">
-                                        <img width={100} className="w-full" src="/assets/tools/card-tool.png" alt="tool" />
-                                    </div>
-                                    <div onClick={()=>setIsShowModal(true)} className="h-44 w-36 shadow-lg ">
-                                        <img width={100} className="w-full" src="/assets/tools/card-tool.png" alt="tool" />
-                                    </div>
-                                    <div onClick={()=>setIsShowModal(true)} className="h-44 w-36 shadow-lg ">
-                                        <img width={100} className="w-full" src="/assets/tools/card-tool.png" alt="tool" />
-                                    </div>
-                                    <div onClick={()=>setIsShowModal(true)} className="h-44 w-36 shadow-lg ">
-                                        <img width={100} className="w-full" src="/assets/tools/card-tool.png" alt="tool" />
-                                    </div>
+                        <div className="fixed top-0 left-0 z-50 h-screen w-full flex flex-row justify-center items-center rounded-lg">
+                            <div className="h-full md:max-h-[700px] p-3 w-full md:max-w-[400px] rounded-lg shadow-lg relative bg-black bg-opacity-40">
+                                <div className="bg-white h-full w-full rounded-lg text-black p-3">
+                                    <div className="flex flex-col">
+                                        <div className="flex justify-between flex-row">
+                                            <span className="text-black text-2xl">Tool Slot</span>
+                                            <button onClick={()=>setIsShowModal(false)}>
+                                                <img width={35} src="/assets/icon/close.svg" alt="close" />
+                                            </button>
+                                        </div>
+                                        <div className="flex flex-row justify-end items-center mt-1">
+                                            <button className="text-white bg-red-500 px-2 py-1 rounded-lg flex flex-row gap-2 items-center">
+                                                <img width={20} src="/assets/icon/close-btn.svg" alt="closeBtn" />
+                                                <span className="">Remove tool</span>
+                                            </button>
+                                        </div>
+                                        <div className="w-full h-full max-h-[550px] mt-5 flex flex-row flex-wrap gap-5 gap-y-16 overflow-y-auto items-center justify-center scrollbar">
+                                            <div onClick={()=>setIsShowModal(true)} className="h-44 w-36 shadow-lg ">
+                                                <img width={100} className="w-full" src="/assets/tools/card-tool.png" alt="tool" />
+                                            </div>
+                                            <div onClick={()=>setIsShowModal(true)} className="h-44 w-36 shadow-lg ">
+                                                <img width={100} className="w-full" src="/assets/tools/card-tool.png" alt="tool" />
+                                            </div>
+                                            <div onClick={()=>setIsShowModal(true)} className="h-44 w-36 shadow-lg ">
+                                                <img width={100} className="w-full" src="/assets/tools/card-tool.png" alt="tool" />
+                                            </div>
+                                            <div onClick={()=>setIsShowModal(true)} className="h-44 w-36 shadow-lg ">
+                                                <img width={100} className="w-full" src="/assets/tools/card-tool.png" alt="tool" />
+                                            </div>
+                                            <div onClick={()=>setIsShowModal(true)} className="h-44 w-36 shadow-lg ">
+                                                <img width={100} className="w-full" src="/assets/tools/card-tool.png" alt="tool" />
+                                            </div>
+                                            <div onClick={()=>setIsShowModal(true)} className="h-44 w-36 shadow-lg ">
+                                                <img width={100} className="w-full" src="/assets/tools/card-tool.png" alt="tool" />
+                                            </div>
+                                        </div>
                                 </div>
                             </div>
                         </div>

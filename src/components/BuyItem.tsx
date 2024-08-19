@@ -82,7 +82,7 @@ const BuyItem = ({petList,index,status,loading,error, refetch, optionFetchs}:{pe
     useEffect(()=>{
         if(isSuccessTx){
             loading(false)
-            status("Buy item successful")
+            status("Feed successful")
             refetchPet()
             refetch()
             optionFetchs.fetchEthBalance()
@@ -94,7 +94,7 @@ const BuyItem = ({petList,index,status,loading,error, refetch, optionFetchs}:{pe
         if(isError){
             console.log(errorTx)
             loading(false)
-            error("Buy item failed!")
+            error("Feed failed!")
             setTimeout(() => {
                 error(null)
             }, 1200); 
@@ -196,9 +196,6 @@ const BuyItem = ({petList,index,status,loading,error, refetch, optionFetchs}:{pe
                         <p>Feed 1 {listButton[currentIndex].name}</p>
                         <p>1 RGT</p>
                     </div>
-                    {/* <div className="flex flex-row justify-center w-full mt-2">
-                        <p className="text-[#00000088]">50 PTS & 12 HOURS TOD</p>
-                    </div> */}
                     <div className="flex flex-row justify-center w-full mt-2">
                         <button onClick={()=>onBuyAccessory(currentIndex)} className="bg-[#2f3b53] w-48 h-10 rounded-lg">
                             <span className="text-[#fff] font-semibold">Feed</span>
@@ -211,9 +208,6 @@ const BuyItem = ({petList,index,status,loading,error, refetch, optionFetchs}:{pe
                         <p>Feed 1 {listButton[currentIndex].name}</p>
                         <p>1 RGT</p>
                     </div>
-                    {/* <div className="flex flex-row justify-center w-full mt-2">
-                        <p className="text-[#00000088]">50 PTS & 12 HOURS TOD</p>
-                    </div> */}
                     <div className="flex flex-row justify-center w-full mt-2">
                         <button onClick={()=>onBuyAccessory(currentIndex)} className="bg-[#2f3b53] w-48 h-10 rounded-lg">
                             <span className="text-[#fff] font-semibold">Feed</span>
@@ -226,9 +220,6 @@ const BuyItem = ({petList,index,status,loading,error, refetch, optionFetchs}:{pe
                         <p>Feed 1 {listButton[currentIndex].name}</p>
                         <p>1 RGT</p>
                     </div>
-                    {/* <div className="flex flex-row justify-center w-full mt-2">
-                        <p className="text-[#00000088]">50 PTS & 12 HOURS TOD</p>
-                    </div> */}
                     <div className="flex flex-row justify-center w-full mt-2">
                         <button onClick={()=>onBuyAccessory(currentIndex)} className="bg-[#2f3b53] w-48 h-10 rounded-lg">
                             <span className="text-[#fff] font-semibold">Feed</span>
@@ -241,9 +232,6 @@ const BuyItem = ({petList,index,status,loading,error, refetch, optionFetchs}:{pe
                         <p>Feed 1 {listButton[currentIndex].name}</p>
                         <p>1 RGT</p>
                     </div>
-                    {/* <div className="flex flex-row justify-center w-full mt-2">
-                        <p className="text-[#00000088]">50 PTS & 12 HOURS TOD</p>
-                    </div> */}
                     <div className="flex flex-row justify-center w-full mt-2">
                         <button onClick={()=>onBuyAccessory(currentIndex)} className="bg-[#2f3b53] w-48 h-10 rounded-lg">
                             <span className="text-[#fff] font-semibold">Feed</span>
