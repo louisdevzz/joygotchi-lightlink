@@ -10,6 +10,18 @@ import { useState } from "react";
 
 const Profile = () =>{
     const [currentIndex, setCurrentIndex] = useState<number>(0)
+    const listButton = [
+        {
+            name:"Mint NFT",
+        },
+        {
+            name:"SWAP",
+        },
+        {
+            name:"Setting"
+        }
+    ];
+    
     return(
         <div className="h-screen w-full flex flex-row justify-center items-center">
             <div className="h-full md:max-h-[700px] w-full md:max-w-[400px] rounded-lg shadow-lg relative overflow-hidden">
@@ -19,7 +31,7 @@ const Profile = () =>{
                         <div className="h-full flex flex-col relative w-full">
                             <div className="mt-4 px-2 w-full">
                                 <div className="mb-5 w-full">
-                                    <Tabs setCurrentIndex={setCurrentIndex} currentIndex={currentIndex}/>
+                                    <Tabs listButton={listButton} setCurrentIndex={setCurrentIndex} currentIndex={currentIndex}/>
                                 </div>
                                 {currentIndex==0?(
                                     <Mint/>

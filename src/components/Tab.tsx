@@ -3,24 +3,13 @@ type Button = {
     name: string,
 }
 
-const Tabs = ({setCurrentIndex,currentIndex}:{setCurrentIndex:any,currentIndex:number}) =>{
-    const listButton = [
-        {
-            name:"Mint NFT",
-        },
-        {
-            name:"SWAP",
-        },
-        {
-            name:"Setting"
-        }
-    ];
-    
+const Tabs = ({listButton,setCurrentIndex,currentIndex}:{listButton:any,setCurrentIndex:any,currentIndex:number}) =>{
+
     return(
-        <div className="flex flex-row justify-between md:max-w-[360px] items-center bg-[#a9c6e4] rounded-lg">
+        <div className="flex flex-row gap-3 md:max-w-[380px] items-center rounded-lg">
                 {listButton.map((btn:Button,id:number)=>(
                     <button onClick={()=>setCurrentIndex(id)} key={id}>
-                        <div className={` hover:bg-[#628ab4] ${currentIndex==id&&"bg-[#628ab4]"} p-2 w-28 flex justify-center rounded-lg`}>
+                        <div className={` hover:bg-[#628ab4] ${currentIndex==id?"bg-[#628ab4]":"bg-[#628ab4] bg-opacity-60"} p-2 max-w-30 flex justify-center rounded-lg`}>
                             <span>{btn.name}</span>
                         </div>
                     </button>

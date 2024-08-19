@@ -1,6 +1,12 @@
-import Play from '@/components/Play';
+"use client"
+// import Play from '@/components/Play';
 import type { Metadata } from 'next';
+import dynamic from 'next/dynamic';
 
+const Play = dynamic(()=>import("@/components/Play"),{
+  ssr: false,
+  loading: () => <div>Loading....</div>
+})
 
 export const metadata: Metadata = {
   title: 'LEAF GUARDIAN',

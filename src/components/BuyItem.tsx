@@ -69,7 +69,7 @@ const BuyItem = ({petList,index,status,loading,error, refetch, optionFetchs}:{pe
         method: "allowance",
         params: [account?.address as string,immidiateUseItemsContract],
     });
-    console.log("allowanceapprove",allowance)
+    //console.log("allowanceapprove",allowance)
 
     useEffect(()=>{
         if(Number(localStorage.getItem("allowanceApprove")) == 0 || allowance == BigInt(0)){
@@ -193,7 +193,7 @@ const BuyItem = ({petList,index,status,loading,error, refetch, optionFetchs}:{pe
             {currentIndex==0?(
                 <div className="mt-3 bg-[#a9c6e4] w-full max-h-36 rounded-lg px-3 py-4">
                     <div className="flex flex-row justify-between w-full">
-                        <p>BUY 1 {listButton[currentIndex].name}</p>
+                        <p>Feed 1 {listButton[currentIndex].name}</p>
                         <p>1 RGT</p>
                     </div>
                     {/* <div className="flex flex-row justify-center w-full mt-2">
@@ -201,14 +201,14 @@ const BuyItem = ({petList,index,status,loading,error, refetch, optionFetchs}:{pe
                     </div> */}
                     <div className="flex flex-row justify-center w-full mt-2">
                         <button onClick={()=>onBuyAccessory(currentIndex)} className="bg-[#2f3b53] w-48 h-10 rounded-lg">
-                            <span className="text-[#fff] font-semibold">BUY</span>
+                            <span className="text-[#fff] font-semibold">Feed</span>
                         </button>
                     </div>
                 </div>
             ):currentIndex==1?(
                 <div className="mt-3 bg-[#a9c6e4] w-full max-h-36 rounded-lg px-3 py-4">
                     <div className="flex flex-row justify-between w-full">
-                        <p>BUY 1 {listButton[currentIndex].name}</p>
+                        <p>Feed 1 {listButton[currentIndex].name}</p>
                         <p>1 RGT</p>
                     </div>
                     {/* <div className="flex flex-row justify-center w-full mt-2">
@@ -216,14 +216,14 @@ const BuyItem = ({petList,index,status,loading,error, refetch, optionFetchs}:{pe
                     </div> */}
                     <div className="flex flex-row justify-center w-full mt-2">
                         <button onClick={()=>onBuyAccessory(currentIndex)} className="bg-[#2f3b53] w-48 h-10 rounded-lg">
-                            <span className="text-[#fff] font-semibold">BUY</span>
+                            <span className="text-[#fff] font-semibold">Feed</span>
                         </button>
                     </div>
                 </div>
             ):currentIndex==2?(
                 <div className="mt-3 bg-[#a9c6e4] w-full max-h-36 rounded-lg px-3 py-4">
                     <div className="flex flex-row justify-between w-full">
-                        <p>BUY 1 {listButton[currentIndex].name}</p>
+                        <p>Feed 1 {listButton[currentIndex].name}</p>
                         <p>1 RGT</p>
                     </div>
                     {/* <div className="flex flex-row justify-center w-full mt-2">
@@ -231,14 +231,14 @@ const BuyItem = ({petList,index,status,loading,error, refetch, optionFetchs}:{pe
                     </div> */}
                     <div className="flex flex-row justify-center w-full mt-2">
                         <button onClick={()=>onBuyAccessory(currentIndex)} className="bg-[#2f3b53] w-48 h-10 rounded-lg">
-                            <span className="text-[#fff] font-semibold">BUY</span>
+                            <span className="text-[#fff] font-semibold">Feed</span>
                         </button>
                     </div>
                 </div>
             ):currentIndex==3&&(
                 <div className="mt-3 bg-[#a9c6e4] w-full max-h-36 rounded-lg px-3 py-4">
                     <div className="flex flex-row justify-between w-full">
-                        <p>BUY 1 {listButton[currentIndex].name}</p>
+                        <p>Feed 1 {listButton[currentIndex].name}</p>
                         <p>1 RGT</p>
                     </div>
                     {/* <div className="flex flex-row justify-center w-full mt-2">
@@ -246,7 +246,7 @@ const BuyItem = ({petList,index,status,loading,error, refetch, optionFetchs}:{pe
                     </div> */}
                     <div className="flex flex-row justify-center w-full mt-2">
                         <button onClick={()=>onBuyAccessory(currentIndex)} className="bg-[#2f3b53] w-48 h-10 rounded-lg">
-                            <span className="text-[#fff] font-semibold">BUY</span>
+                            <span className="text-[#fff] font-semibold">Feed</span>
                         </button>
                     </div>
                 </div>

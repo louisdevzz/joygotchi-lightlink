@@ -6,17 +6,17 @@ import BuyItem from './BuyItem';
 import ScreenPet from './ScreenPet';
 import { useRouter } from 'next/router';
 import { ConnectButton, useActiveAccount, useReadContract, useSendTransaction } from 'thirdweb/react';
-
-const client = createThirdwebClient({
-    clientId: process.env.CLIENT_ID!
-});
 import { inAppWallet } from "thirdweb/wallets";
 import { createThirdwebClient, getContract, prepareContractCall } from 'thirdweb';
 import axios from 'axios';
 import { petAddress } from '@/utils/abi';
 import Mint from './Mint';
 import Header from './Header';
+import Link from 'next/link';
 
+const client = createThirdwebClient({
+    clientId: process.env.CLIENT_ID!
+});
 
 const Play = () => {
     const wallets = [inAppWallet()]
@@ -32,9 +32,11 @@ const Play = () => {
     const [index, setIndex] = useState<number>(0);
     const [status, setStatus] = useState<string|null>(null);
     const [error, setError] = useState<string|null>(null)
+    const [backgroundPet, setPackgroundPet] = useState<string|null>(null)
     const router = useRouter();
     const contractAddress = "0x5D31C0fF4AAF1C906B86e65fDd3A17c7087ab1E3"
     
+
     const chain = {
         id:1891,
         rpc:"https://replicator-01.pegasus.lightlink.io/rpc/v1"
@@ -55,6 +57,14 @@ const Play = () => {
     if(isError){
         console.log('You have not pet',ErrorPet)
     }
+
+    useEffect(()=>{
+        if(localStorage.getItem("backgroundPet")){
+            setPackgroundPet(localStorage.getItem("backgroundPet"))
+        }else{
+            setPackgroundPet("screen_pet.png")
+        }
+    },[])
 
     useEffect(()=>{
         if(isSuccessNamePet){
@@ -214,12 +224,18 @@ const Play = () => {
         return item ? (num / item.value).toFixed(digits).replace(regexp, "").concat(item.symbol) : "0";
     }
 
-    // let formatter = Intl.NumberFormat('en', { notation: 'compact' });
-    //console.log("data",nFormatter(440000000000000000,1))
-    //console.log("petlist",petList)
-    //console.log("eth",ethBalance)
-    //console.log("raitoken",raiTokenBalance)
-    //console.log("namepet",namePet)
+    if(loadingFetch){
+        return(
+            <div className="h-full md:max-h-[700px] w-full md:max-w-[400px] rounded-lg shadow-lg relative">
+                <div className="bg-[#e5f2f8] flex flex-col h-full w-full relative">
+                    <Header/>
+                    <div className='h-screen'/>
+                    <Footer/>
+                </div>
+            </div>
+        )
+    }
+
     return(
         <div className="h-full md:max-h-[700px] w-full md:max-w-[400px] rounded-lg shadow-lg relative">
             <div className="bg-[#e5f2f8] flex flex-col h-full w-full relative">
@@ -323,14 +339,16 @@ const Play = () => {
                                 <div className="flex flex-col">
                                     <div className="mt-2 h-full">
                                         <div className="w-full h-[250px] rounded-md flex justify-center flex-row relative">
-                                            <img width={60} className="w-full h-full rounded-md" src="/assets/background/screen_pet.png" alt="screen" />
+                                            <img width={60} className="w-full h-full rounded-md" src={`/assets/background/${backgroundPet}`} alt="screen" />
                                             <div className="flex flex-row justify-between">
-                                                {/* <img width={10} height={10} className="w-6 h-6 absolute top-1/2 left-[70px] " src="/assets/icon/arrow_left.png" alt="arrow" /> */}
-                                                {/* <img width={150} className="absolute top-1/2 left-[53%] transform -translate-x-1/2 -translate-y-1/2" src="/assets/pet/pet.png" alt="pet" /> */}
                                                 <div className="absolute top-[40%] left-[50%] transform -translate-x-1/2 -translate-y-1/2">
                                                     <ScreenPet dataPet={dataPet} petList={petList} changeName={setNamePet} setIndex={setIndex}/>
                                                 </div>
-                                                {/* <img width={10} height={10} className="w-6 h-6 absolute top-1/2 right-[60px] " src="/assets/icon/arrow_right.png" alt="arrow" /> */}
+                                                <div className='absolute top-3/4 mt-3 left-[56%]'>
+                                                    <Link href={"/accessories"} className='px-2 py-1 rounded-lg bg-gradient-to-r from-indigo-600  to-purple-600  bg-no-repeat bg-bottom '>
+                                                        <span>Accessories</span>
+                                                    </Link>
+                                                </div>
                                             </div>
                                             {/* <p className="text-[#fff] font-semibold absolute top-3/4 mt-3 left-1/2 transform -translate-x-1/2 ">Pet Name</p> */}
                                         </div>
@@ -354,9 +372,10 @@ const Play = () => {
                                         </div>
                                     </div>
                                     <BuyItem petList={petList} index={index} loading={setLoading} status={setStatus} error={setError} refetch={refetch} optionFetchs={{
-                                        fetchEthBalance,
-                                        fetchRaiToken
-                                    }}/>
+                                            fetchEthBalance,
+                                            fetchRaiToken
+                                        }}/>
+                                    
                                 </div>
                             )
                         }

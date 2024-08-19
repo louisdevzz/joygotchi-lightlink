@@ -6,3 +6,8 @@ interface HistoryAttack {
     scoresWon: number,
     prizeDebt: number
 }
+
+interface Background{
+    backgroundPet?: any,
+    data: string[]
+}
