@@ -29,7 +29,7 @@ const Mint = () =>{
     
     const chain = {
         id:1891,
-        rpc:"https://replicator-01.pegasus.lightlink.io/rpc/v1"
+        rpc:"https://endpoints.omniatech.io/v1/lightlink/pegasus/public"
     }
     
     const contract = getContract({

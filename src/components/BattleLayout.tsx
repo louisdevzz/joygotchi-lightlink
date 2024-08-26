@@ -3,6 +3,7 @@ import { useState } from "react";
 
 const BattleLayout = ({petList,setIndex}:{petList: any,setIndex:any}) =>{
     const [currentIndex, setCurrentIndex] = useState<number>(0);
+    const [petName, setPetName] = useState<string|null>(null);
 
     const goToPrevious = () =>{
         const isFirstIndex = currentIndex == 0;
@@ -25,16 +26,16 @@ const BattleLayout = ({petList,setIndex}:{petList: any,setIndex:any}) =>{
     }
 
     return(
-        petList.length > 0 && petList[currentIndex] && <div className="relative">
+        petList.length > 0 && petList[currentIndex] && <div className="flex flex-row gap-3 justify-center items-center">
             <button onClick={goToPrevious}>
-                <img width={10} height={10} className="absolute arrow-left " src="/assets/icon/arrow_left.png" alt="arrow" />
+                <img width={10} height={10} className="w-6" src="/assets/icon/arrow_left.png" alt="arrow" />
             </button>
-            <img className="-mt-10 pet" src={petList[currentIndex].metadata.image} alt={petList[currentIndex].metadata.name} />
+            <img className="-mt-10 w-44 h-44" src={petList[currentIndex].metadata.image} alt={petList[currentIndex].metadata.name} />
             <button onClick={goToNext}>
-                <img width={10} height={10} className="absolute arrow-right" src="/assets/icon/arrow_right.png" alt="arrow" />
+                <img width={10} height={10} className="w-6" src="/assets/icon/arrow_right.png" alt="arrow" />
             </button>
-            <div className="absolute top-[70%] w-40 left-[0%] text-black">
-                <small>{truncateNamePet(petList[currentIndex].metadata.name)}</small>
+            <div className="absolute w-full -top-12 left-1 text-black">
+                <span className="font-semibold">{petList[currentIndex].metadata.name}</span>
             </div>
         </div>
     )

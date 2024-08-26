@@ -124,3 +124,6 @@ body{
   transform: rotateX(180deg);
 }
 
+.oponent{
+  transform: rotateY(180deg);
+}

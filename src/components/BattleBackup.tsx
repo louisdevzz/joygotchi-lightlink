@@ -29,9 +29,6 @@ const Battle = () =>{
     const [seconds,setSeconds] = useState<number>(0)
     const [petInfolist, setPetInfoList] = useState<any>([]);
     const [gas, setGas] = useState<bigint|null>(null)
-    const [isPendingAttack,setIsPendingAttack] = useState<boolean>(false)
-    const [attackSuccess, setAttackSuccess] = useState<boolean>(false)
-
 
     const contractAddress = "0x5D31C0fF4AAF1C906B86e65fDd3A17c7087ab1E3"
     const attackAddress = "0x828D456D397B08a19ca87Ad2Cf97598a07bf0D0E"
@@ -263,19 +260,7 @@ const Battle = () =>{
         }
     }
 
-    const Attack = () =>{
-        setIsPendingAttack(true)
-        setTimeout(() => {
-            setAttackSuccess(true)
-        }, 5000);
-    }
-
-    const onReturn = () =>{
-        setIsPendingAttack(false)
-        setAttackSuccess(false)
-    }
-
-    //console.log(pets)
+    //console.log(petInfolist)
 
     return(
         <div className="h-screen w-full flex flex-row justify-center items-center">
@@ -306,65 +291,71 @@ const Battle = () =>{
                         </div>
                     )}
                     <Header/>
-                    <div className="h-full overflow-y-auto w-full scrollbar overflow-x-hidden">
-                        <div className="h-full flex flex-col relative w-full text-center">
-                            <p className="font-semibold text-2xl mt-2 text-black">Battle PvP</p>
+                    <div className="h-full overflow-y-auto w-full scrollbar">
+                        <div className="h-full flex flex-col relative w-full">
+                            {
+                                isAttackf15m&&(
+                                    <div className="mt-2 text-center flex justify-center flex-row px-2">
+                                        <p className="text-black px-2 py-1 bg-slate-300 w-full rounded-lg">Next Attack: <CountDownTimer seconds={seconds}/></p>
+                                    </div>
+                                )
+                            }
                             <div className="mt-2 relative px-2">
+                                <div className="w-full responsive rounded-md flex justify-center flex-row relative">
+                                    {
+                                        pets.length > 0 &&(
+                                            <div className="absolute top-[65%] left-[52%] text-black">
+                                                <small>{namePet}</small>
+                                            </div>
+                                        )
+                                    }
+                                    <img width={60} className="w-full h-full rounded-md" src="/assets/background/battle.png" alt="screen" />
+                                    {pets.length > 0 && pets[currentIndexPet] &&(
+                                        <img className="absolute mg" src={pets[currentIndexPet].metadata.image} alt="pet" />
+                                    )}
+                                    <div className="flex flex-row justify-between">
+                                        <div className="absolute position">
+                                            <BattleLayout petList={oponents} setIndex={setCurrentIndex}/>
+                                        </div>
+                                    </div>
+                                </div>
                                 {
-                                    !isPendingAttack&&(
-                                        <div className="w-full responsive rounded-md flex justify-center flex-row relative">
+                                pets.length > 0 &&(
+                                    <div onClick={()=>setIsShow((prv)=>!prv)} className="mt-2 bg-[#a9c6e4] p-3 relative rounded-lg flex flex-row justify-between items-center text-black">
+                                        <div className="flex flex-row items-center gap-2">
+                                            {pets.length > 0 &&(
+                                                <img className="-mt-2" width={62} src={pets[currentIndexPet].metadata.image} alt="pet" />
+                                            )}
                                             <div className="flex flex-col">
-                                                <img width={60} className="w-full h-full rounded-md" src="/assets/background/screen_pet.png" alt="screen" />
-                                                <div className="absolute top-[20%] w-full left-1/2 transform -translate-x-1/2 translate-y-1/2">
-                                                    <BattleLayout petList={pets} setIndex={setCurrentIndexPet}/>
+                                                <p className="text-sm">{namePet}</p>
+                                                <div className="flex flex-row gap-3">
+                                                    <div className="flex flex-col">
+                                                        <small>ATK: 100</small>
+                                                        <small>DEF: 100</small>
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <small>Status: {dataPet ? dataPet[1].toString():"-"}</small>
+                                                        <small>Score: {dataPet ? nFormatter(Number(dataPet[2].toString()),1):"-"}</small>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    )
+                                        <button>
+                                            <img width={20} className="rotate-90" src="/assets/icon/arrow_right.png" alt="arrow" />
+                                        </button>
+                                    </div>
+                                )
                                 }
-                                {
-                                    isPendingAttack&&(
-                                        <div className="w-full responsive rounded-md flex justify-center flex-row relative">
-                                            <div className="flex flex-col">
-                                                <img width={60} className="w-full h-full rounded-md" src="/assets/background/battle.png" alt="screen" />
-                                                {
-                                                    pets.length > 0 &&(
-                                                        <div className="absolute top-[30%] left-0">
-                                                            <img className="-mt-10 w-32 h-32" src={pets[currentIndexPet].metadata.image} alt={pets[currentIndexPet].metadata.name} />
-                                                        </div>
-                                                    )
-                                                }
-                                                {
-                                                    oponents.length > 0 &&(
-                                                        <div className="absolute top-[30%] right-0">
-                                                            <img className="-mt-10 w-32 h-32 oponent" src={oponents[currentIndex].metadata.image} alt={oponents[currentIndex].metadata.name} />
-                                                        </div>
-                                                    )
-                                                }
-                                                {
-                                                    attackSuccess&&(
-                                                        <div className="absolute flex justify-center items-center w-full z-20 h-full bg-black bg-opacity-45 rounded-lg">
-                                                            <span className="font-semibold text-2xl">You Win</span>
-                                                        </div>
-                                                    )
-                                                }
-                                            </div>
-                                        </div>
-                                    )
-                                }
-                                
                                 <div className="mt-2 border-2 border-gray-300 flex flex-row justify-center gap-5 w-full px-2 py-3 rounded-lg text-black">
-                                    {
-                                        attackSuccess?(
-                                            <button onClick={onReturn} className="bg-orange-500 hover:bg-opacity-70 w-full px-2 py-3 rounded-lg">
-                                                <span className="font-semibold text-xl text-white">Return battle</span>
-                                            </button>
-                                        ):(
-                                            <button onClick={Attack} disabled={isPendingAttack} className="bg-orange-500 hover:bg-opacity-70 w-full px-2 py-3 rounded-lg">
-                                                <span className="font-semibold text-xl text-white">{isPendingAttack ? "Attacking..." : "Battle"}</span>
-                                            </button>
-                                        )
-                                    }
+                                    <button onClick={onAttack}>
+                                        {
+                                            isAttack?(
+                                                <img width={260} src="/assets/button/button-attack-enter.png" alt="btn" />
+                                            ):(
+                                                <img width={260} src="/assets/button/button-attack.png" alt="btn" />
+                                            )
+                                        }
+                                    </button>
                                 </div>
                             </div>
                             
