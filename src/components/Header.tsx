@@ -16,9 +16,7 @@ import { inAppWallet } from "thirdweb/wallets";
 const Header = () =>{
     const wallets = [inAppWallet()]
     const account = useActiveAccount();
-    const [isShow, setIsShow] = useState<boolean>(false);
     const [status, setStatus] = useState<string|null>(null);
-    const router = useRouter();
     const [ethBalance, setEthBalance] = useState<string|null>(null)
     const [raiTokenBalance, setRaiTokenBalance] = useState<string|null>(null)
 
@@ -96,16 +94,16 @@ const Header = () =>{
                         </div>
                     </div>
                 )}
-            <div className="border-b border-gray-300 h-16 w-full bg-[#2d3c53] relative">
+            <div className="border-b border-gray-300 h-16 w-full background-top relative">
                 <div className="flex flex-row justify-between items-center px-2 py-2 pt-3">
                     <div className="flex flex-row items-center gap-5">
                         <div className="flex flex-row gap-1">
                             <img width={25} height={25} src="/assets/icon/eth_light.svg" alt="coin" />
-                            <p className="text-[#fff]">{ethBalance ? ethBalance : "0"}</p>
+                            <p className="font-outline text-[#fff]">{ethBalance ? ethBalance : "0"}</p>
                         </div>
                         <div className="flex flex-row gap-1">
-                            <img width={25} height={25} src="/assets/icon/coin_light.svg" alt="coin" />
-                            <p className="text-[#fff]">{raiTokenBalance ?  parseDot(raiTokenBalance) : "0"}</p>
+                            <img width={25} height={25} src="/assets/icon/coin.svg" alt="coin" />
+                            <p className="font-outline text-[#fff]">{raiTokenBalance ?  parseDot(raiTokenBalance) : "0"}</p>
                         </div>
                     </div>
                     
@@ -116,7 +114,7 @@ const Header = () =>{
                             },
                             render:()=>{
                                 return(
-                                    <div className="px-2 cursor-pointer py-0.5 h-8 rounded-full bg-[#a9c6e4]">
+                                    <div className="px-2 cursor-pointer py-0.5 h-8 rounded-full  bg-[#9de6ac] font-outline">
                                         {truncateString(account?.address as string)}
                                     </div>
                                 )
@@ -127,12 +125,6 @@ const Header = () =>{
                             },
                             label: "Connect Wallet"
                         }} autoConnect client={client} wallets={wallets} />
-                        {/* <ConnectButton client={client} chain={{
-                            id:1891,
-                            rpc:`https://1891.rpc.thirdweb.com/${process.env.CLIENT_ID!}`
-                        }}
-                        wallets={wallets}
-                        /> */}
                     </div>
                 </div>
                 

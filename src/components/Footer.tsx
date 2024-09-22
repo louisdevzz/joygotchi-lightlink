@@ -3,12 +3,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-type Button = {
-    src: string,
-    title: string,
-    url: string
-}
-
 const Footer = () =>{
     
     const [currentIndex, setCurrentIndex] = useState<number>(0);
@@ -30,11 +24,9 @@ const Footer = () =>{
     }
 
     return(
-        <div className="bg-[#e5f2f8] sticky w-full bottom-0 mt-1
-        
-        ">
+        <div className="bg-[#e5f2f8] sticky w-full bottom-0 mt-1">
             <img width={200} height={100} className="w-full h-[108px]" src="/assets/background/frame_bottom.png" alt="frame" />
-            <div className="absolute top-2 left-0 flex justify-center w-full">
+            <div className="absolute top-3 left-0 flex justify-center w-full">
                 <div className="flex flex-row gap-2 justify-between w-full px-2 items-center">
                     {ImageButton.map((btn:Button,i:number)=>(
                         <Link href={btn.url} key={i} onClick={()=>handleSelectIndex(i)}>

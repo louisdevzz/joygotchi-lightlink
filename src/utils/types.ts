@@ -11,3 +11,9 @@ interface Background{
     backgroundPet?: any,
     data: string[]
 }
+
+interface Button {
+    src: string,
+    title: string,
+    url: string
+}

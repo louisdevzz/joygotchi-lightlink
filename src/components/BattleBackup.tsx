@@ -54,7 +54,7 @@ const Battle = () =>{
 
     const chain = {
         id:1891,
-        rpc:"https://endpoints.omniatech.io/v1/lightlink/pegasus/public"
+        rpc:"https://replicator.pegasus.lightlink.io/rpc/v1"
     }
 
 

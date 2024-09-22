@@ -31,7 +31,7 @@ const BuyItem = ({petList,index,status,loading,error, refetch, optionFetchs}:{pe
 
     const chain ={
         id: 1891,
-        rpc: "https://replicator-01.pegasus.lightlink.io/rpc/v1"
+        rpc: "https://replicator.pegasus.lightlink.io/rpc/v1"
     }
 
     useEffect(()=>{
@@ -180,8 +180,8 @@ const BuyItem = ({petList,index,status,loading,error, refetch, optionFetchs}:{pe
     }
     
     return(
-        <div className="flex flex-col">
-            <div className="mt-3 flex flex-row w-full justify-between items-center gap-5">
+        <div className="flex flex-col mt-5 relative">
+            {/* <div className="mt-3 flex flex-row w-full justify-between items-center gap-5">
                 {listButton.map((btn:Button,id:number)=>(
                     <button onClick={()=>setCurrentIndex(id)} key={id}>
                         <div className={`${currentIndex==id?"bg-[#628ab4]":"bg-[#a9c6e4]"} hover:bg-[#628ab4] p-2 h-16 w-16 flex justify-center rounded-lg`}>
@@ -238,7 +238,34 @@ const BuyItem = ({petList,index,status,loading,error, refetch, optionFetchs}:{pe
                         </button>
                     </div>
                 </div>
-            )}
+            )} */}
+            <img width={100} className="w-full h-full" src="/assets/asset/shop_item.png" alt="asset" />
+            <div className="flex flex-row gap-8 absolute top-5 left-12">
+                <button className="flex flex-col items-center gap-2">
+                    <img width={33} src="/assets/items/water.png" alt="item" />
+                </button>
+                <button className="flex flex-col items-center gap-2 mt-5">
+                    <img width={66} src="/assets/items/meat.png" alt="item" />
+                </button>
+                <button className="flex flex-col items-center gap-2 mt-1">
+                    <img width={35} src="/assets/items/shield.png" alt="item" />
+                </button>
+                <button className="flex flex-col items-center gap-2">
+                    <img width={65} src="/assets/items/holy_water.png" alt="item" />
+                </button>
+            </div>
+            <div className="flex flex-row gap-[2.2rem] items-center absolute bottom-[3rem] left-9 text-sm">
+                <span className="font-outline">Water</span>
+                <span className="font-outline">Meat</span>
+                <span className="font-outline">Shield</span>
+                <span className="font-outline">Holy Water</span>
+            </div>
+            <div className="flex flex-row gap-[4.2rem] items-center absolute bottom-[1.6rem] left-[2.8rem] text-sm">
+                <span>8</span>
+                <span>10</span>
+                <span>5</span>
+                <span>20</span>
+            </div>
         </div>
     )
 }

@@ -33,13 +33,14 @@ const Play = () => {
     const [status, setStatus] = useState<string|null>(null);
     const [error, setError] = useState<string|null>(null)
     const [backgroundPet, setPackgroundPet] = useState<string|null>(null)
+    const [isShowModal, setIsShowModal] = useState<boolean>(false)
     const router = useRouter();
     const contractAddress = "0x5D31C0fF4AAF1C906B86e65fDd3A17c7087ab1E3"
     
 
     const chain = {
         id:1891,
-        rpc:"https://endpoints.omniatech.io/v1/lightlink/pegasus/public"
+        rpc:"https://replicator.pegasus.lightlink.io/rpc/v1"
     }
 
     const contractPet = getContract({
@@ -227,7 +228,7 @@ const Play = () => {
     if(loadingFetch){
         return(
             <div className="h-full md:max-h-[700px] w-full md:max-w-[400px] rounded-lg shadow-lg relative">
-                <div className="bg-[#e5f2f8] flex flex-col h-full w-full relative">
+                <div className="bg-[#5cd6fe] bg-opacity-20 flex flex-col h-full w-full relative">
                     <Header/>
                     <div className='h-screen'/>
                     <Footer/>
@@ -238,7 +239,7 @@ const Play = () => {
 
     return(
         <div className="h-full md:max-h-[700px] w-full md:max-w-[400px] rounded-lg shadow-lg relative">
-            <div className="bg-[#e5f2f8] flex flex-col h-full w-full relative">
+            <div className="background bg-opacity-30 flex flex-col h-full w-full relative">
                 {status&&(
                     <div className="fixed md:absolute z-50 bg-[#d4edda] w-80 h-10 top-5 left-[52%] rounded-lg border-2 border-[#c3e6cb] shadow-sm transform -translate-x-1/2 transition-all delay-75">
                         <div className="flex flex-row w-full px-3 items-center h-full gap-2">
@@ -270,7 +271,7 @@ const Play = () => {
                 }
                 {
                     !loadingFetch&&petList.length > 0 &&(
-                        <div className="w-full sticky top-0 z-20">
+                        <div className="w-full sticky top-0 z-20 rounded-t-lg">
                                 {
                                     isShow&&(
                                         <div className="fixed h-screen w-full md:max-h-[700px] md:max-w-[400px] bg-black bg-opacity-45 z-40 overflow-hidden overscroll-none">
@@ -294,27 +295,27 @@ const Play = () => {
                                         </div>
                                     )
                                 }
-                                <div className="border-b border-gray-300 h-20 w-full bg-[#2d3c53] relative">
+                                <div className="border-b border-gray-300 h-20 w-full relative background-top">
                                     <div className="flex flex-row justify-between px-2 py-2">
                                         <div className="flex flex-col gap-1">
                                             <div className="flex flex-row gap-1">
                                                 <img width={25} src="/assets/icon/eth_light.svg" alt="coin" />
-                                                <p className="text-[#fff]">{ethBalance ? ethBalance : "0"}</p>
+                                                <p className="font-outline text-[#fff]">{ethBalance ? ethBalance : "0"}</p>
                                             </div>
                                             <div className="flex flex-row gap-1">
-                                                <img width={25} src="/assets/icon/coin_light.svg" alt="coin" />
-                                                <p className="text-[#fff]">{raiTokenBalance ? parseDot(raiTokenBalance) :"0"}</p>
+                                                <img width={25} src="/assets/icon/coin.svg" alt="coin" />
+                                                <p className="font-outline text-[#fff]">{raiTokenBalance ? parseDot(raiTokenBalance) :"0"}</p>
                                             </div>
                                         </div>
                                         <div onClick={()=>setIsShow(true)} className="flex flex-row gap-1 items-center -mt-1 ml-2">
-                                            <p className="text-[#fff]">{truncateNamePet(namePet as string)}</p>
+                                            <p className="font-outline text-[#fff]">{truncateNamePet(namePet as string)}</p>
                                             <img width={14} src="/assets/icon/pen.svg" alt="pen" />
                                         </div>
                                         <div className="flex flex-row  mt-1 items-center">
                                             <ConnectButton connectModal={{ size: "wide" }} detailsButton={{
                                                 render:()=>{
                                                     return(
-                                                        <div className="px-2 cursor-pointer py-0.5 h-8 rounded-full bg-[#a9c6e4]">
+                                                        <div className="px-2 cursor-pointer py-0.5 h-8 rounded-full bg-[#9de6ac] font-outline">
                                                             {truncateString(account?.address as string)}
                                                         </div>
                                                     )
@@ -339,21 +340,54 @@ const Play = () => {
                                 <div className="flex flex-col">
                                     <div className="mt-2 h-full">
                                         <div className="w-full h-[250px] rounded-md flex justify-center flex-row relative">
-                                            <img width={60} className="w-full h-full rounded-md" src={`/assets/background/${backgroundPet}`} alt="screen" />
+                                            <img width={60} className="w-full h-full rounded-md" src={`/assets/background/pet_background.png`} alt="screen" />
                                             <div className="flex flex-row justify-between">
-                                                <div className="absolute top-[40%] left-[50%] transform -translate-x-1/2 -translate-y-1/2">
+                                                <div className="absolute top-[40%] left-[48%] transform -translate-x-1/2 -translate-y-1/2">
                                                     <ScreenPet dataPet={dataPet} petList={petList} changeName={setNamePet} setIndex={setIndex}/>
                                                 </div>
-                                                <div className='absolute top-3/4 mt-3 left-[56%]'>
+                                                <span className='absolute top-[80%] mt-4 w-[80%] text-center left-[50%] transform -translate-x-1/2 -translate-y-1/2 font-outline'>
+                                                    {
+                                                        dataPet&&(dataPet[0]==""?petList[index].metadata.name
+                                                        :dataPet[0])
+                                                        
+                                                    }
+                                                </span>
+                                                {/* <div className='absolute top-3/4 mt-3 left-[56%]'>
                                                     <Link href={"/accessories"} className='px-2 py-1 rounded-lg bg-gradient-to-r from-indigo-600  to-purple-600  bg-no-repeat bg-bottom '>
                                                         <span>Accessories</span>
                                                     </Link>
-                                                </div>
+                                                </div> */}
                                             </div>
                                             {/* <p className="text-[#fff] font-semibold absolute top-3/4 mt-3 left-1/2 transform -translate-x-1/2 ">Pet Name</p> */}
                                         </div>
                                     </div>
-                                    <div className="mt-2 bg-[#a9c6e4] w-full flex-row flex justify-between rounded-lg px-3 py-4">
+                                    <div className='mt-4 relative'>
+                                        <img width={20} className='w-full h-full' src="/assets/asset/information_pet.png" alt="asset" />
+                                        {
+                                            petList&&(
+                                                    <div className='absolute top-3 left-5'>
+                                                        <img width={70} src={petList[index].image_url} alt="pet" />
+                                                    </div>
+                                                )
+                                        }
+                                        <div className='flex flex-col absolute top-6 left-[28%] text-white font-outline'>
+                                            <span className='text-sm'>RAI</span>
+                                            <div className='flex flex-row gap-5 text-sm'>
+                                                <div className='flex flex-col'>
+                                                    <span>ATK: 100</span>
+                                                    <span>DEF: 100</span>
+                                                </div>
+                                                <div className='flex flex-col'>
+                                                    <span>STAUS: HAPPY</span>
+                                                    <span>SCORE: 0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button onClick={()=>setIsShowModal(true)} className='absolute right-6 bottom-6'>
+                                            <img width={35} src="/assets/asset/swap.png" alt="icon" />
+                                        </button>
+                                    </div>
+                                    {/* <div className="mt-2 bg-[#a9c6e4] w-full flex-row flex justify-between rounded-lg px-3 py-4">
                                         <div className="flex flex-col text-center">
                                             <p className="text-xl">{dataPet ? dataPet[6].toString():"-"} ETH</p>
                                             <span className="text-[#00000088]">REWARDS</span>
@@ -370,12 +404,64 @@ const Play = () => {
                                             <p className="text-xl">{dataPet ? nFormatter(Number(dataPet[2].toString()),1):"-"}</p>
                                             <span className="text-[#00000088]">SCORE</span>
                                         </div>
-                                    </div>
+                                    </div> */}
                                     <BuyItem petList={petList} index={index} loading={setLoading} status={setStatus} error={setError} refetch={refetch} optionFetchs={{
                                             fetchEthBalance,
                                             fetchRaiToken
                                         }}/>
                                     
+                                </div>
+                            )
+                        }
+                        {
+                            isShowModal&&(
+                                <div className="fixed top-0 left-0 z-10 h-screen w-full flex flex-row justify-center items-center rounded-lg">
+                                    <div className="h-full md:max-h-[700px] w-full md:max-w-[400px] rounded-lg shadow-lg relative bg-black bg-opacity-40 overflow-y-auto scrollbar overflow-x-hidden">
+                                        <div className='bg-[#fff] w-full h-full mt-[5rem]'>
+                                            <img width={200} className="w-full" src="/assets/asset/pet_swap_header.png" alt="frame" />
+                                            <div className='flex flex-col gap-2 mt-2'>
+                                                {
+                                                    petList&&(
+                                                        petList.map((item:any,index:number)=>(
+                                                            <div key={index} className='relative'>
+                                                                <img width={20} className='w-full' src="/assets/asset/pet_information_swap.png" alt="coin" />
+                                                                {
+                                                                    petList&&(
+                                                                        <div className='absolute top-3 left-4'>
+                                                                            <img width={80} src={item.image_url} alt="pet" />
+                                                                        </div>
+                                                                    )
+                                                                }
+                                                                <span className='absolute text-xs top-4 mt-4 w-full text-center left-[40%] transform -translate-x-1/2 -translate-y-1/2 font-outline'>
+                                                                    {
+                                                                        dataPet&&(dataPet[0]==""? truncateNamePet(item.metadata.name)
+                                                                        :truncateNamePet(dataPet[0]))   
+                                                                    }
+                                                                </span>
+                                                                <span className='absolute text-xs top-4 mt-4 w-full text-center left-[77%] transform -translate-x-1/2 -translate-y-1/2 font-outline'>
+                                                                    status:{" "}
+                                                                    happy
+                                                                </span>
+                                                                <div className='absolute text-xs bottom-6 mt-4 w-full text-center left-[78%] transform -translate-x-1/2 -translate-y-1/2 font-outline flex flex-row gap-2'>
+                                                                    <span className=''>
+                                                                        ATK:{" "}
+                                                                        100
+                                                                    </span>
+                                                                    <span className=''>
+                                                                        DEF:{" "}
+                                                                        100
+                                                                    </span>
+                                                                </div>
+                                                                <button onClick={()=>setIsShowModal(false)} className='absolute text-xs bottom-1 mt-4 w-full text-center left-[71%] transform  -translate-y-1/2 font-outline'>
+                                                                    <img width={100} src="/assets/asset/pet_swap_button.png" alt="button" />
+                                                                </button>
+                                                            </div>
+                                                        ))
+                                                    )
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             )
                         }

@@ -280,7 +280,7 @@ const Battle = () =>{
     return(
         <div className="h-screen w-full flex flex-row justify-center items-center">
             <div className="h-full md:max-h-[700px] w-full md:max-w-[400px] rounded-lg shadow-lg relative">
-                <div className="bg-[#e5f2f8] flex flex-col h-full w-full relative">
+                <div className="background flex flex-col h-full w-full relative">
                     {status&&(
                         <div className="fixed md:absolute z-50 bg-[#d4edda] w-80 h-10 top-5 left-[52%] rounded-lg border-2 border-[#c3e6cb] shadow-sm transform -translate-x-1/2 transition-all delay-75">
                             <div className="flex flex-row w-full px-3 items-center h-full gap-2 text-center">
@@ -308,16 +308,27 @@ const Battle = () =>{
                     <Header/>
                     <div className="h-full overflow-y-auto w-full scrollbar overflow-x-hidden">
                         <div className="h-full flex flex-col relative w-full text-center">
-                            <p className="font-semibold text-2xl mt-2 text-black">Battle PvP</p>
-                            <div className="mt-2 relative px-2">
+                            <img width={200} className="w-full" src="/assets/background/battle_banner.gif" alt="battle" />
+                            <div className="relative px-2">
                                 {
                                     !isPendingAttack&&(
                                         <div className="w-full responsive rounded-md flex justify-center flex-row relative">
                                             <div className="flex flex-col">
-                                                <img width={60} className="w-full h-full rounded-md" src="/assets/background/screen_pet.png" alt="screen" />
-                                                <div className="absolute top-[20%] w-full left-1/2 transform -translate-x-1/2 translate-y-1/2">
-                                                    <BattleLayout petList={pets} setIndex={setCurrentIndexPet}/>
-                                                </div>
+                                                <img width={60} className="w-full h-full rounded-md" src="/assets/background/battle_bg.png" alt="screen" />
+                                                {
+                                                    pets.length > 0 &&(
+                                                        <div className="absolute top-[16%] w-full left-[19%] transform  translate-y-1/2">
+                                                            <img width={80} src={pets[0].metadata.image} alt={pets[0].metadata.name} />
+                                                        </div>
+                                                    )
+                                                }
+                                                {
+                                                    pets.length > 0 &&(
+                                                        <div className="absolute top-[32%] w-full -left-[20%] oponent">
+                                                            <img width={80} src={pets[1].metadata.image} alt={pets[1].metadata.name} />
+                                                        </div>
+                                                    )
+                                                }
                                             </div>
                                         </div>
                                     )
@@ -353,6 +364,19 @@ const Battle = () =>{
                                     )
                                 }
                                 
+                                <div className="relative mt-3">
+                                    <img width={20} className="w-full" src="/assets/asset/battle_pet_info.png" alt="battle" />
+                                    <div className="absolute bottom-0 left-0 w-full ">
+                                        {
+                                            pets.length > 0 &&(
+                                                <div className="flex flex-col">
+                                                    <img width={60} src={pets[0].metadata.image} alt={pets[0].metadata.name} />
+                                                </div>
+                                            )
+                                        }
+                                    </div>
+                                </div>
+
                                 <div className="mt-2 border-2 border-gray-300 flex flex-row justify-center gap-5 w-full px-2 py-3 rounded-lg text-black">
                                     {
                                         attackSuccess?(
