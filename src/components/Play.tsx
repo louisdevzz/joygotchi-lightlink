@@ -13,7 +13,7 @@ import { petAddress } from '@/utils/abi';
 import Mint from './Mint';
 import Header from './Header';
 import Link from 'next/link';
-
+import Web3 from 'web3';
 const client = createThirdwebClient({
     clientId: process.env.CLIENT_ID!
 });
@@ -34,6 +34,7 @@ const Play = () => {
     const [error, setError] = useState<string|null>(null)
     const [backgroundPet, setPackgroundPet] = useState<string|null>(null)
     const [isShowModal, setIsShowModal] = useState<boolean>(false)
+    const [petInfoList, setPetInfoList] = useState<any>([])
     const router = useRouter();
     const contractAddress = "0x5D31C0fF4AAF1C906B86e65fDd3A17c7087ab1E3"
     
@@ -42,6 +43,10 @@ const Play = () => {
         id:1891,
         rpc:"https://replicator.pegasus.lightlink.io/rpc/v1"
     }
+
+    const attackAddress = "0x828D456D397B08a19ca87Ad2Cf97598a07bf0D0E"
+    const web3 = new Web3('https://replicator-01.pegasus.lightlink.io/rpc/v1'); 
+    const raiGotchiContract = new web3.eth.Contract(petAddress, contractAddress);
 
     const contractPet = getContract({
         client,
@@ -225,6 +230,34 @@ const Play = () => {
         return item ? (num / item.value).toFixed(digits).replace(regexp, "").concat(item.symbol) : "0";
     }
 
+    const loadPetInfo = async() =>{
+        if(petList.length > 0){
+            const petInfomation:any = []
+            for(let i = 0; i < petList.length; i++){
+                const petInfo = await raiGotchiContract.methods.getPetInfo(petList[i].id).call();
+                const cleanPetInfo = {
+                    _id:petList[i].id,
+                    _name: petInfo._name,
+                    _status: petInfo._status,
+                    _score: petInfo._score,
+                    _level: petInfo._level,
+                    _timeUntilStarving: petInfo._timeUntilStarving,
+                    _owner: petInfo._owner,
+                    _rewards: petInfo._rewards,
+                    _genes: petInfo._genes
+                };
+                petInfomation.push(cleanPetInfo)
+                //console.log(`[INFO] Pet ${pets[i].id} Info:`, cleanPetInfo);
+            }
+            setPetInfoList(petInfomation)
+            //console.log("petinfo",petInfomation)
+        }
+    }
+
+    useEffect(()=>{
+        loadPetInfo()
+    },[petList])
+
     if(loadingFetch){
         return(
             <div className="h-full md:max-h-[700px] w-full md:max-w-[400px] rounded-lg shadow-lg relative">
@@ -334,7 +367,7 @@ const Play = () => {
                     )
                 }
                 <div className="h-full overflow-y-auto w-full scrollbar">
-                    <div className="p-3 h-full flex flex-col relative w-full">
+                    <div className="p-2 h-full flex flex-col relative w-full">
                         {
                             !loadingFetch&&petList.length > 0 &&(
                                 <div className="flex flex-col">
@@ -417,7 +450,7 @@ const Play = () => {
                             isShowModal&&(
                                 <div className="fixed top-0 left-0 z-10 h-screen w-full flex flex-row justify-center items-center rounded-lg">
                                     <div className="h-full md:max-h-[700px] w-full md:max-w-[400px] rounded-lg shadow-lg relative bg-black bg-opacity-40 overflow-y-auto scrollbar overflow-x-hidden">
-                                        <div className='bg-[#fff] w-full h-full mt-[5rem]'>
+                                        <div className='bg-[#fff] w-full h-screen mt-[5rem] p-2'>
                                             <img width={200} className="w-full" src="/assets/asset/pet_swap_header.png" alt="frame" />
                                             <div className='flex flex-col gap-2 mt-2'>
                                                 {
@@ -427,16 +460,13 @@ const Play = () => {
                                                                 <img width={20} className='w-full' src="/assets/asset/pet_information_swap.png" alt="coin" />
                                                                 {
                                                                     petList&&(
-                                                                        <div className='absolute top-3 left-4'>
+                                                                        <div className='absolute top-2 left-3'>
                                                                             <img width={80} src={item.image_url} alt="pet" />
                                                                         </div>
                                                                     )
                                                                 }
                                                                 <span className='absolute text-xs top-4 mt-4 w-full text-center left-[40%] transform -translate-x-1/2 -translate-y-1/2 font-outline'>
-                                                                    {
-                                                                        dataPet&&(dataPet[0]==""? truncateNamePet(item.metadata.name)
-                                                                        :truncateNamePet(dataPet[0]))   
-                                                                    }
+                                                                    {petInfoList[index]._name!='' ? truncateNamePet(petInfoList[index]._name) : truncateNamePet(item.metadata.name)}
                                                                 </span>
                                                                 <span className='absolute text-xs top-4 mt-4 w-full text-center left-[77%] transform -translate-x-1/2 -translate-y-1/2 font-outline'>
                                                                     status:{" "}

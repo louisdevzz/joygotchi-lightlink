@@ -17,9 +17,10 @@ const Mining = () =>{
     const oldSeconds = 0
     const [seconds,setSeconds] = useState<number>(Math.abs(Math.floor((Date.now()-oldSeconds)/1000) - 60));
     const [error, setError] = useState<string|null>(null)
-    const [isShowModal, setIsShowModal] = useState<boolean>(false);
+    const [isShowUpgrade, setIsShowUpgrade] = useState<boolean>(false);
     const [isClaim, setIsClaim] = useState<boolean>(false)
     const [gas, setGas] = useState<bigint|null>(null)
+    const [isShowBuy, setIsShowBuy] = useState<boolean>(false)
     const faucetAddress= "0x937529264EBF13a0203cfAf7bBf09a3822f6636a"
     const acccont = useActiveAccount();
     const { mutate: sendTx, data: transactionResult,isSuccess,isError,isPending } = useSendTransaction();
@@ -142,7 +143,7 @@ const Mining = () =>{
     return(
         <div className="flex flex-row justify-center items-center h-screen">
             <div className="h-full md:max-h-[700px] w-full md:max-w-[400px] rounded-lg shadow-lg relative">
-                <div className="bg-[#e5f2f8] h-full w-full flex flex-col relative">
+                <div className="background h-full w-full flex flex-col relative">
                     {status&&(
                         <div className="fixed md:absolute z-50 bg-[#d4edda] w-60 h-10 top-5 left-[52%] rounded-lg border-2 border-[#c3e6cb] shadow-sm transform -translate-x-1/2 transition-all delay-75">
                             <div className="flex flex-row w-full px-3 items-center h-full gap-2">
@@ -169,148 +170,86 @@ const Mining = () =>{
                     )}
                     <Header/>
                     <div className="overflow-y-auto w-full h-full scrollbar">
-                        <div className="mt-2 px-2 flex flex-col gap-3 text-center justify-center">
-                            <span className="text-black font-semibold text-xl">Auto Mining</span>
+                        <div className="mt-2 px-2 flex flex-col gap-3 text-center justify-center items-center">
                             <div className="border-2 border-[#304053] shadow-sm w-full h-60 rounded-lg relative">
                                 <img width={70} className="w-full h-60 rounded-lg" src="/assets/background/mining-background.png" alt="gif" />
                                 <img width={70} className="absolute top-[35%] left-[60%]" src="/assets/background/stone.png" alt="stone" />
                                 <img width={150} className="absolute top-[25%] left-[35%]" src="/assets/pet/mining.gif" alt="mining" />
                             </div>
-                            <div className="flex flex-col">
-                                <span className="text-black">Profit per hour: <strong className="text-orange-500 font-semibold">499999K</strong></span>
-                                <div className="flex flex-row justify-center items-center">
-                                    <span className="text-black flex flex-row justify-center items-center gap-1">&#61; Base x &#40;1 &#43; <img width={13} src="/assets/icon/people.svg"/>&#41; &#43; <img width={23} src="/assets/icon/electric.svg"/></span>
-                                    <img className="ml-2" width={20} src="/assets/icon/question.svg" alt="icon" />
-                                </div>
-                            </div>
-                            <div className="h-16 rounded-lg border border-[#304053] border-opacity-35 bg-[#D3E0EA] w-full flex flex-row gap-3 items-center justify-center">
-                                <img width={35} src="/assets/icon/rgt.svg" alt="coin" />
-                                <span className="text-orange-500 text-4xl">150</span>
-                            </div>
-                            <div className="h-full rounded-lg border border-[#304053] border-opacity-35 bg-[#D3E0EA] w-full flex flex-col">
-                                <div className="border-b border-[#304053] border-opacity-35 text-start">
-                                    <div className="p-2">
-                                        <span className="text-black">Brone Mining Machine</span>
+                            <img width={200} className="w-full" src="/assets/asset/mining_screen_coin.png" alt="background" />
+                            <div className="relative w-full h-full">
+                                <img width={20} className="w-full" src="/assets/asset/mining_screen_info.png" alt="info" />
+                                <span className="font-outline absolute top-4 left-4 text-lg">BRONE MINING MACHINE</span>
+                                <div className="absolute top-16 left-4 flex flex-col gap-2">
+                                    <div className="flex flex-row gap-5 items-center">
+                                        <div className="w-20 h-20 rounded-lg relative">
+                                            <img width={70} className="h-20 w-20 rounded-lg" src="/assets/background/mining-background.png" alt="gif" />
+                                            <img width={20} className="absolute top-[35%] right-5" src="/assets/background/stone.png" alt="stone" />
+                                            <img width={50} className="absolute top-[25%] left-[4%]" src="/assets/pet/mining.gif" alt="mining" />
+                                        </div>
+                                        <div className="flex gap-2 flex-col text-start font-outline text-lg">
+                                            <small>Base&#58; &#43;20&#47;h</small>
+                                            <small>Offline work time: 3h</small>
+                                        </div>
                                     </div>
+                                    
                                 </div>
-                                <div className="p-2 flex flex-row gap-2 justify-between items-center">
-                                    <div className="w-20 h-20 rounded-lg relative">
-                                        <img width={70} className="h-20 w-20 rounded-lg" src="/assets/background/mining-background.png" alt="gif" />
-                                        <img width={20} className="absolute top-[35%] right-5" src="/assets/background/stone.png" alt="stone" />
-                                        <img width={50} className="absolute top-[25%] left-[4%]" src="/assets/pet/mining.gif" alt="mining" />
-                                    </div>
-                                    <div className="flex gap-2 flex-col text-start text-black">
-                                        <small>Base&#58; &#43;20&#47;h</small>
-                                        <small>Offline work time: 3h</small>
-                                    </div>
-                                    <button onClick={()=>setIsShowModal(true)} className="border p-2 h-8 flex items-center border-[#304053] rounded-lg">
-                                        <small className="text-black">Upgrade</small>
-                                    </button>
-                                </div>
+                                <button className="absolute bottom-3 right-3" onClick={()=>setIsShowUpgrade(!isShowUpgrade)}>
+                                    <img width={120} src="/assets/asset/mining_upgrade_button.png" alt="upgrade" />
+                                </button>
                             </div>
+                            {
+                                isShowUpgrade&&(
+                                    <div className="relative">
+                                        <div className="flex flex-row gap-2">
+                                            <img className="w-[7.5rem]" src="/assets/asset/break.png" alt="break" />
+                                            <img className="w-[7.5rem]" src="/assets/asset/break.png" alt="break" />
+                                            <img className="w-[7.5rem]" src="/assets/asset/break.png" alt="break" />
+                                        </div>
+                                        <div className="mt-1 grid grid-cols-2 gap-2">
+                                            <div className="relative">
+                                                <img className="w-[12rem]" src="/assets/asset/mining_info_machine.png" alt="machine" />
+                                                <img width={65} className="absolute top-1 left-0" src="/assets/icons/ai.png" alt="ai" />
+                                            </div>
+                                            <div className="relative">
+                                                <img className="w-[12rem]" src="/assets/asset/mining_info_machine.png" alt="machine" />
+                                                <img width={65} className="absolute top-1 left-0" src="/assets/icons/ai.png" alt="ai" />
+                                            </div>
+                                            <div className="relative">
+                                                <img className="w-[12rem]" src="/assets/asset/mining_info_machine.png" alt="machine" />
+                                                <img width={65} className="absolute top-1 left-0" src="/assets/icons/ai.png" alt="ai" />
+                                            </div>
+                                            <div className="relative">
+                                                <img className="w-[12rem]" src="/assets/asset/mining_info_machine.png" alt="machine" />
+                                                <img width={65} className="absolute top-1 left-0" src="/assets/icons/ai.png" alt="ai" />
+                                            </div>
+                                            <div className="relative">
+                                                <img className="w-[12rem]" src="/assets/asset/mining_info_machine.png" alt="machine" />
+                                                <img width={65} className="absolute top-1 left-0" src="/assets/icons/ai.png" alt="ai" />
+                                            </div>
+                                            <div className="relative">
+                                                <img className="w-[12rem]" src="/assets/asset/mining_info_machine.png" alt="machine" />
+                                                <img width={65} className="absolute top-1 left-0" src="/assets/icons/ai.png" alt="ai" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            }
+                            {
+                                isShowBuy&&(
+                                    <div className="fixed top-0 left-0 z-20 h-screen w-full flex flex-row justify-center items-center">
+                                        <div className="h-full md:max-h-[700px] w-full md:max-w-[400px] rounded-lg shadow-lg relative bg-black bg-opacity-50 overflow-y-auto scrollbar overflow-x-hidden ">
+                                            <div className="w-full rounded-lg p-2 font-outline pb-10 mt-16"> 
+                                                <img width={200} className="w-full" src="/assets/asset/mining_confirm_buy.png" alt="background" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            }
                         </div>
                     </div>
                     <Footer/>
                 </div>
-                {
-                    isShowModal&&(
-                        <div className="fixed top-0 left-0 z-50 h-screen w-full flex flex-row justify-center items-center rounded-lg">
-                            <div className="h-full md:max-h-[700px] p-3 w-full md:max-w-[400px] rounded-lg shadow-lg relative bg-black bg-opacity-40">
-                                <div className="bg-white h-full w-full rounded-lg text-black p-3">
-                                    <div className="flex flex-col">
-                                        <div className="flex justify-between flex-row">
-                                            <span className="text-black text-2xl">Tool Slot</span>
-                                            <button onClick={()=>setIsShowModal(false)}>
-                                                <img width={35} src="/assets/icon/close.svg" alt="close" />
-                                            </button>
-                                        </div>
-                                        
-                                        {/* <div className="flex flex-row justify-end items-center mt-1">
-                                            <button className="text-white bg-red-500 px-2 py-1 rounded-lg flex flex-row gap-2 items-center">
-                                                <img width={20} src="/assets/icon/close-btn.svg" alt="closeBtn" />
-                                                <span className="">Remove tool</span>
-                                            </button>
-                                        </div> */}
-                                        <div className="w-full h-full max-h-[550px] mt-5 flex flex-row flex-wrap gap-2 overflow-y-auto items-center justify-center scrollbar">
-                                            <div className="h-full w-40 rounded-lg border border-[#304053] border-opacity-35 bg-[#D3E0EA]">
-                                                <div className="flex flex-row justify-between gap-3 p-2">
-                                                    <img width={40} height={40} src="/assets/tools/pickaxe.svg" alt="tool" />
-                                                    <div className="flex flex-col gap-1 text-black">
-                                                        <small>Pickaxe</small>
-                                                        <small className="text-[#505050]">Profit per hour: &#43;20</small>
-                                                    </div>
-                                                </div>
-                                                <div className="border-t border-[#304053] border-opacity-35">
-                                                    <div className="px-2 flex flex-row gap-2">
-                                                        <small className="border-r py-1 pr-2 border-[#304053] border-opacity-35">Lvl 4</small>
-                                                        <div className="flex py-1 flex-row gap-2">
-                                                            <img width={15} src="/assets/icon/rgt.svg" alt="coin" />
-                                                            <small>500</small>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="h-full w-40 rounded-lg border border-[#304053] border-opacity-35 bg-[#D3E0EA]">
-                                                <div className="flex flex-row justify-between gap-3 p-2">
-                                                    <img width={40} height={40} src="/assets/tools/pickaxe.svg" alt="tool" />
-                                                    <div className="flex flex-col gap-1 text-black">
-                                                        <small>Pickaxe</small>
-                                                        <small className="text-[#505050]">Profit per hour: &#43;20</small>
-                                                    </div>
-                                                </div>
-                                                <div className="border-t border-[#304053] border-opacity-35">
-                                                    <div className="px-2 flex flex-row gap-2">
-                                                        <small className="border-r py-1 pr-2 border-[#304053] border-opacity-35">Lvl 4</small>
-                                                        <div className="flex py-1 flex-row gap-2">
-                                                            <img width={15} src="/assets/icon/rgt.svg" alt="coin" />
-                                                            <small>500</small>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="h-full w-40 rounded-lg border border-[#304053] border-opacity-35 bg-[#D3E0EA]">
-                                                <div className="flex flex-row justify-between gap-3 p-2">
-                                                    <img width={40} height={40} src="/assets/tools/pickaxe.svg" alt="tool" />
-                                                    <div className="flex flex-col gap-1 text-black">
-                                                        <small>Pickaxe</small>
-                                                        <small className="text-[#505050]">Profit per hour: &#43;20</small>
-                                                    </div>
-                                                </div>
-                                                <div className="border-t border-[#304053] border-opacity-35">
-                                                    <div className="px-2 flex flex-row gap-2">
-                                                        <small className="border-r py-1 pr-2 border-[#304053] border-opacity-35">Lvl 4</small>
-                                                        <div className="flex py-1 flex-row gap-2">
-                                                            <img width={15} src="/assets/icon/rgt.svg" alt="coin" />
-                                                            <small>500</small>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="h-full w-40 rounded-lg border border-[#304053] border-opacity-35 bg-[#D3E0EA]">
-                                                <div className="flex flex-row justify-between gap-3 p-2">
-                                                    <img width={40} height={40} src="/assets/tools/pickaxe.svg" alt="tool" />
-                                                    <div className="flex flex-col gap-1 text-black">
-                                                        <small>Pickaxe</small>
-                                                        <small className="text-[#505050]">Profit per hour: &#43;20</small>
-                                                    </div>
-                                                </div>
-                                                <div className="border-t border-[#304053] border-opacity-35">
-                                                    <div className="px-2 flex flex-row gap-2">
-                                                        <small className="border-r py-1 pr-2 border-[#304053] border-opacity-35">Lvl 4</small>
-                                                        <div className="flex py-1 flex-row gap-2">
-                                                            <img width={15} src="/assets/icon/rgt.svg" alt="coin" />
-                                                            <small>500</small>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    )
-                }
             </div>
             
         </div>

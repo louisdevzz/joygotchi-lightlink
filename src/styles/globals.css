@@ -28,6 +28,12 @@
   .font-outline {
     text-shadow: 3px 0 #000, -2px 0 #000, 0 2px #000, 0 -2px #000, 1px 1px #000, -1px -1px #000, 1px -1px #000, -1px 1px #000;
   }
+  .font-outline-pink {
+    text-shadow: 3px 0 #e15b59, -2px 0 #e15b59, 0 2px #e15b59, 0 -2px #e15b59, 1px 1px #e15b59, -1px -1px #e15b59, 1px -1px #e15b59, -1px 1px #e15b59;
+  }
+  .font-outline-red {
+    text-shadow: 3px 0 #861d00, -2px 0 #861d00, 0 2px #861d00, 0 -2px #861d00, 1px 1px #861d00, -1px -1px #861d00, 1px -1px #861d00, -1px 1px #861d00;
+  }
 }
 
 html{

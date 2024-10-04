@@ -31,7 +31,9 @@ const Battle = () =>{
     const [gas, setGas] = useState<bigint|null>(null)
     const [isPendingAttack,setIsPendingAttack] = useState<boolean>(false)
     const [attackSuccess, setAttackSuccess] = useState<boolean>(false)
-
+    const [showLog, setShowLog] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [logAttack, setLogAttack] = useState<string[]>([])
 
     const contractAddress = "0x5D31C0fF4AAF1C906B86e65fDd3A17c7087ab1E3"
     const attackAddress = "0x828D456D397B08a19ca87Ad2Cf97598a07bf0D0E"
@@ -239,6 +241,13 @@ const Battle = () =>{
         return item ? (num / item.value).toFixed(digits).replace(regexp, "").concat(item.symbol) : "0";
     }
 
+    const truncateNamePet = (str: string)=>{
+        if(str&&str.length > 10){
+            return str.slice(0,10)+"..."
+        }
+        return str
+    }
+
     const loadPetInfo = async() =>{
         if(pets.length > 0){
             const petInfomation:any = []
@@ -275,6 +284,35 @@ const Battle = () =>{
         setAttackSuccess(false)
     }
 
+    //console.log(pets)
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, 5000); // 15 seconds
+
+        return () => clearTimeout(timer);
+    }, []);
+
+    if (isLoading) {
+        return (
+            <div className="h-screen w-full flex flex-row justify-center items-center">
+                <div className="h-full md:max-h-[700px] w-full md:max-w-[400px] rounded-lg shadow-lg relative">
+                    <div className="background flex flex-col h-full w-full relative">
+                        <Header/>
+                        <div className="h-full overflow-y-auto w-full scrollbar overflow-x-hidden">
+                            <div className="h-full flex flex-col relative w-full text-center justify-center items-center">
+                                <img width={200} src="/assets/asset/battle_pvp_searching .gif" alt="battle" />
+                            </div>
+                        </div>
+                        <Footer/>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    //console.log(petInfolist)
     //console.log(pets)
 
     return(
@@ -364,20 +402,70 @@ const Battle = () =>{
                                     )
                                 }
                                 
-                                <div className="relative mt-3">
+                                <div className="relative mt-3 w-full">
                                     <img width={20} className="w-full" src="/assets/asset/battle_pet_info.png" alt="battle" />
-                                    <div className="absolute bottom-0 left-0 w-full ">
+                                    <div className="absolute bottom-6 left-4 w-full flex flex-row gap-4 items-center">
                                         {
                                             pets.length > 0 &&(
                                                 <div className="flex flex-col">
-                                                    <img width={60} src={pets[0].metadata.image} alt={pets[0].metadata.name} />
+                                                    <img width={80} src={pets[0].metadata.image} alt={pets[0].metadata.name} />
                                                 </div>
                                             )
                                         }
+                                        <div className="flex flex-col items-start mt-4 font-outline">
+                                            <span className='text-lg'>RAI</span>
+                                            <div className='flex flex-row gap-10 text-sm'>
+                                                <div className='flex flex-col'>
+                                                    <span>ATK: 100</span>
+                                                    <span>DEF: 100</span>
+                                                </div>
+                                                <div className='flex flex-col items-start'>
+                                                    <span>STAUS: HAPPY</span>
+                                                    <span>SCORE: 0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="absolute top-1 right-4 w-auto flex flex-row-reverse gap-4 items-center">
+                                        {
+                                            pets.length > 1 &&(
+                                                <div className="flex flex-col oponent">
+                                                    <img width={80} src={pets[1].metadata.image} alt={pets[1].metadata.name} />
+                                                </div>
+                                            )
+                                        }
+                                        <div className="flex flex-col items-start mt-4 font-outline">
+                                            <span className='text-lg'>RAI</span>
+                                            <div className='flex flex-row gap-10 text-sm'>
+                                                <div className='flex flex-col'>
+                                                    <span>ATK: 100</span>
+                                                    <span>DEF: 100</span>
+                                                </div>
+                                                <div className='flex flex-col items-start'>
+                                                    <span>STAUS: HAPPY</span>
+                                                    <span>SCORE: 0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="mt-2 relative">
+                                    <img src="/assets/asset/battle_log.png" alt="Battle Log" className="w-full h-full" />
+                                    <div className="absolute top-4 left-6 flex text-start w-full h-full text-sm font-outline flex-col gap-2">
+                                        <span className="text-sm">Log Information</span>
+                                        <span>Rai attacked, dealt 35 dmg</span>
+                                    </div>
+                                    <div className="absolute right-4 bottom-0 transform -translate-y-1/2">
+                                        <img 
+                                            src="/assets/asset/battle_arrow_down.png" 
+                                            alt="Toggle Log" 
+                                            className={`w-7 h-6 transition-transform duration-300 ${showLog ? 'rotate-180' : ''}`}
+                                        />
                                     </div>
                                 </div>
 
-                                <div className="mt-2 border-2 border-gray-300 flex flex-row justify-center gap-5 w-full px-2 py-3 rounded-lg text-black">
+                                {/* <div className="mt-2 border-2 border-gray-300 flex flex-row justify-center gap-5 w-full px-2 py-3 rounded-lg text-black">
                                     {
                                         attackSuccess?(
                                             <button onClick={onReturn} className="bg-orange-500 hover:bg-opacity-70 w-full px-2 py-3 rounded-lg">
@@ -389,46 +477,78 @@ const Battle = () =>{
                                             </button>
                                         )
                                     }
-                                </div>
+                                </div> */}
                             </div>
-                            
                             
                         </div>
                         {
-                            isShow&&(
+                            logAttack.length > 0 && logAttack.includes("You Lost")&&(
                                 <div className="fixed top-0 left-0 z-50 h-screen w-full flex flex-row justify-center items-center ">
-                                    <div className="h-full md:max-h-[700px] p-3 w-full md:max-w-[400px] rounded-lg shadow-lg relative bg-black bg-opacity-40">
-                                        <div className="bg-white h-full w-full rounded-lg text-black p-3">
-                                            <div className="flex flex-row justify-between items-center">
-                                                <span>List All Pet</span>
-                                                <button onClick={()=>setIsShow(false)}>
-                                                    <img width={30} src="/assets/icon/close.svg" alt="icon" />
-                                                </button>
-                                            </div>
-                                            <div className="overflow-y-auto gap-2 mt-2 h-full flex flex-col">
-                                                {pets.length > 0&&petInfolist.length > 0&&pets.map((pet:any,idx:number)=>{
-                                                    const petInfo = petInfolist.filter((p:any)=>p._id==pet.id)
-                                                    return(
-                                                        <div key={idx} onClick={()=>handlSelectPet(idx)} className="w-full bg-[#a9c6e4] px-1 py-2 cursor-pointer hover:bg-opacity-75 focus:bg-opacity-75 rounded-lg flex flex-row justify-between items-center text-black">
-                                                            <div className="flex flex-row items-center gap-2">
-                                                                <img className="-mt-2" width={62} src={pet.metadata.image} alt="pet" />
-                                                                <div className="flex flex-col">
-                                                                    <p className="text-sm">{petInfo&&petInfo[0]._name == ""?pet.metadata.name:petInfo[0]._name}</p>
-                                                                    <div className="flex flex-row gap-3">
-                                                                        <div className="flex flex-col">
-                                                                            <small>ATK: 100</small>
-                                                                            <small>DEF: 100</small>
-                                                                        </div>
-                                                                        <div className="flex flex-col">
-                                                                            <small>Status: {petInfo ? petInfo[0]._status.toString():"-"}</small>
-                                                                            <small>Score: {petInfo ? nFormatter(Number(petInfo[0]._score.toString()),1):"-"}</small>
-                                                                        </div>
+                                    <div className="h-full md:max-h-[700px] p-2 w-full md:max-w-[400px] rounded-lg shadow-lg relative bg-black bg-opacity-40 flex flex-col gap-5 items-center">
+                                        <img width={200} height={100} className="max-h-[300px] w-full mt-10" src="/assets/asset/battle_lost.png" alt="battle" />
+                                        <button>
+                                            <img width={130} src="/assets/asset/button_ok.png" alt="icon" />
+                                        </button>
+                                    </div>
+                                </div>
+                            )
+                        }
+                        {
+                            logAttack.length > 0 && logAttack.includes("You Win")&&(
+                                <div className="fixed top-0 left-0 z-50 h-screen w-full flex flex-row justify-center items-center ">
+                                    <div className="h-full md:max-h-[700px] p-2 w-full md:max-w-[400px] rounded-lg shadow-lg relative bg-black bg-opacity-40 flex flex-col gap-5 items-center">
+                                        <img width={200} height={100} className="max-h-[300px] w-full mt-10" src="/assets/asset/battle_win.png" alt="battle" />
+                                        <button>
+                                            <img width={130} src="/assets/asset/button_ok.png" alt="icon" />
+                                        </button>
+                                    </div>
+                                </div>
+                            )
+                        }
+                        {
+                            logAttack.length > 0 && logAttack.includes("You and Opponent are both dead")&&(
+                                <div className="fixed top-0 left-0 z-50 h-screen w-full flex flex-row justify-center items-center ">
+                                    <div className="h-full md:max-h-[700px] p-2 w-full md:max-w-[400px] rounded-lg shadow-lg relative bg-black bg-opacity-40 flex flex-col gap-5 items-center">
+                                        <img width={200} height={100} className="max-h-[300px] w-full mt-10" src="/assets/asset/battle_draw.png" alt="battle" />
+                                        <button>
+                                            <img width={130} src="/assets/asset/button_ok.png" alt="icon" />
+                                        </button>
+                                    </div>
+                                </div>
+                            )
+                        }
+                        {
+                            isShow&&(
+                                <div className="fixed top-0 left-0 z-20 h-screen w-full flex flex-row justify-center items-center">
+                                    <div className="h-full md:max-h-[700px] w-full md:max-w-[400px] rounded-lg shadow-lg relative background overflow-y-auto scrollbar overflow-x-hidden">
+                                        <div className="h-screen w-full rounded-lg p-3 font-outline pb-10 mt-16"> {/* Added pb-20 for bottom padding */}
+                                            <img width={200} className="w-full" src="/assets/asset/battle_pvp_list_header.png" alt="battle" />
+                                            <div className="flex flex-col gap-2 mt-5">
+                                                {
+                                                    pets.length > 0 && (
+                                                        pets.map((pet: any, idx: number) => (
+                                                            <div key={idx} className="flex flex-col gap-2 relative">
+                                                                <img width={200} className="w-full" src="/assets/asset/battle_pvp_list_tab.png" alt="battle" />
+                                                                <img width={80} className="absolute bottom-6 left-4" src={pet.metadata.image} alt="pet" />
+                                                                <span className="absolute top-5 left-[27%] text-sm">
+                                                                    {petInfolist[idx]._name!='' ? truncateNamePet(petInfolist[idx]._name) : truncateNamePet(pet.metadata.name)}
+                                                                </span>
+                                                                <span className="absolute top-5 right-[24%] text-sm">ID: {pet.id}</span>
+                                                                <div className="flex flex-col absolute bottom-5 left-[27%] text-[13px]">
+                                                                    <span>x{petInfolist[idx] ? nFormatter(Number(petInfolist[idx]._score), 2) : '0000000'}</span>
+                                                                    <div className="flex flex-row gap-2">
+                                                                        <span>ATK: {petInfolist[idx] ? petInfolist[idx]._genes[0] : '100'}</span>
+                                                                        <span>DEF: {petInfolist[idx] ? petInfolist[idx]._genes[1] : '100'}</span>
                                                                     </div>
                                                                 </div>
+                                                                <button className="absolute bottom-5 right-4" onClick={() => handlSelectPet(idx)}>
+                                                                    <img width={20} className="w-24" src="/assets/asset/battle_pvp_fight_button.png" alt="battle" />
+                                                                </button>   
                                                             </div>
-                                                        </div>
+                                                        ))
                                                     )
-                                                })}
+                                                }
+                                                
                                             </div>
                                         </div>
                                     </div>

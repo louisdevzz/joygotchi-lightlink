@@ -15,7 +15,7 @@ const Footer = () =>{
         {src: "/assets/button/home.png",title: "home",url:"/home"},
         {src: "/assets/button/mining.png",title: "mining", url: "/mining"},
         {src: "/assets/button/attack.png",title: "attack", url: "/battle"},
-        {src: "/assets/button/petlist.png",title:"petlist", url: "/profile"},
+        {src: "/assets/button/petlist.png",title:"petlist", url: "/bread"},
         {src: "/assets/button/training.png",title: "training", url: "/mission"},
     ]
 
@@ -24,7 +24,7 @@ const Footer = () =>{
     }
 
     return(
-        <div className="bg-[#e5f2f8] sticky w-full bottom-0 mt-1">
+        <div className="bg-[#e5f2f8] sticky w-full bottom-0 mt-1 z-30">
             <img width={200} height={100} className="w-full h-[108px]" src="/assets/background/frame_bottom.png" alt="frame" />
             <div className="absolute top-3 left-0 flex justify-center w-full">
                 <div className="flex flex-row gap-2 justify-between w-full px-2 items-center">

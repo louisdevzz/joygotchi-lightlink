@@ -85,7 +85,7 @@ const Header = () =>{
     }
 
     return(
-        <div className="sticky w-full fix-header top-0 z-10 md:rounded-t-lg">
+        <div className="sticky w-full fix-header top-0 z-30 md:rounded-t-lg">
             {status&&(
                     <div className="fixed z-50 bg-[#97b5d5] w-60 h-10 top-5 left-[52%] rounded-lg border-2 border-[#e5f2f8] shadow-sm transform -translate-x-1/2 transition-all delay-75">
                         <div className="flex flex-row w-full px-3 items-center h-full gap-2">
